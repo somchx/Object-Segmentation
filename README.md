@@ -1,6 +1,17 @@
 # Object Segmentation and Detection Report
 ## CI 7204 / CI 7306 — Image Processing and Analytics | GSAS NIDA
 
+### 🎓 Prepared By
+- **Student ID:** 6710421004
+- **Name:** Chananya Aiamprakhon
+
+### 🏛️ Academic Institution
+- **National Institute of Development Administration (NIDA)**
+- **Faculty:** Faculty of Applied Statistics
+- **Program:** Computer Science and Information Systems (CSIS)
+
+---
+
 This project explores the capabilities and limitations of **traditional image processing techniques** for object segmentation and detection. Using **OpenCV** and **Python**, we implemented 40 different cases categorized by their difficulty and outcome.
 
 ---
