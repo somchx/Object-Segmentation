@@ -1,218 +1,220 @@
-# Object Segmentation and Detection Report
-## CI 7204 / CI 7306 — Image Processing and Analytics | GSAS NIDA
+# รายงานการทดลอง: Object Segmentation และ Detection
+## CI 7204 / CI 7306 — การประมวลผลและวิเคราะห์ภาพ | สถาบันบัณฑิตพัฒนบริหารศาสตร์ (NIDA)
 
-### 🎓 Prepared By
-- **Student ID:** 6710421004
-- **Name:** Chananya Aiamprakhon
+### 🎓 ข้อมูลผู้จัดทำ
+- **รหัสนักศึกษา:** 6710421004
+- **ชื่อ:** ชนัญญา เอี่ยมประโคน
 
-### 🏛️ Academic Institution
-- **National Institute of Development Administration (NIDA)**
-- **Faculty:** Faculty of Applied Statistics
-- **Program:** Computer Science and Information Systems (CSIS)
-
----
-
-This project explores the capabilities and limitations of **traditional image processing techniques** for object segmentation and detection. Using **OpenCV** and **Python**, we implemented 40 different cases categorized by their difficulty and outcome.
+### 🏛️ สถาบัน
+- **สถาบันบัณฑิตพัฒนบริหารศาสตร์ (NIDA)**
+- **คณะ:** คณะสถิติประยุกต์
+- **สาขา:** วิทยาการคอมพิวเตอร์และระบบสารสนเทศ (CSIS)
 
 ---
 
-## 🛠️ Methodology & Implementation
-
-The core logic follows a systematic pipeline for traditional Computer Vision:
-1. **Preprocessing**: Noise reduction using Gaussian/Bilateral blurring and contrast enhancement via CLAHE.
-2. **Feature Extraction**:
-    - **Color**: HSV for reliable hue-based masking and LAB for perceptually uniform color separation.
-    - **Texture**: Gabor Filters to detect directional patterns (like fur or fabric).
-    - **Edges**: Canny and Sobel operators for intensity discontinuity detection.
-3. **Refinement**: Morphological operations (Opening, Closing, Dilations) to bridge gaps and remove noise blobs.
-4. **Segmentation**: Watershed algorithm for overlapping objects and GrabCut for iterative foreground extraction.
-5. **Detection**: Bounding box generation based on contour analysis and area filtering.
+โปรเจกต์นี้เป็นการทดลองใช้ **เทคนิค Image Processing แบบดั้งเดิม** เพื่อทำ Object Segmentation และ Detection  โดยใช้ **OpenCV** และ **Python** ทั้งหมด 40 กรณีทดสอบ แบ่งตามระดับความยากและผลลัพธ์ที่ได้
 
 ---
 
-## 📂 Case Categories
+## 🛠️ วิธีการและขั้นตอนการทำงาน
 
-### 1. ✅ Easy Success Cases (E1–E10)
-Focus on objects with highly saturated colors against clean, contrasting backgrounds.
-- **Outcome**: Near 100% accuracy using simple **HSV Color Masking**.
-- **Examples**: Red Apple, Yellow Banana, Orange Basketball, Tennis Ball.
+Pipeline หลักที่ใช้ในการทดลองนี้เป็น Computer Vision แบบ Traditional ประกอบด้วย 5 ขั้นตอนหลัก ดังนี้
 
-### 2. ✅ Difficult Success Cases (D1–D10)
-Challenges involving low contrast, similar backgrounds, or overlapping instances.
-- **Outcome**: Success achieved by combining multiple advanced techniques (e.g., **Distance Transform + Watershed** for lemons, **LAB Fusion + GrabCut** for the Polar Bear).
-- **Examples**: Polar Bear in Snow, Camouflaged Chameleon, Transparent Glass.
-
-### 3. ❌ Failed as Expected Cases (FE1–FE10)
-True negative cases where objects are physically indistinguishable from their environment (Evolutionary Camouflage).
-- **Outcome**: Targeted failure. Shows that without semantic knowledge or 3D data (Depth), pixel-level processing is insufficient.
-- **Examples**: Military Camouflage, Flatfish (Flounder), Stick Insect.
-
-### 4. ❌ Failed but Unexpected Cases (FU1–FU10)
-Cases that logically should have been separable but failed due to environmental noise.
-- **Outcome**: Technical failure due to **Specular Highlights** (Coffee Mug), **Wood Grain Noise** (Coin), or **Water Scattering** (Underwater scenes).
-- **Insight**: Highlights the fragility of hand-tuned thresholds against real-world lighting variance.
+1. **Preprocessing (การเตรียมภาพ):** ลด Noise ด้วย Gaussian/Bilateral Blur และเพิ่ม Contrast ด้วย CLAHE
+2. **Feature Extraction (การดึงคุณลักษณะ):**
+    - **Color (สี):** ใช้ HSV สำหรับการทำ Hue-based Masking และ LAB สำหรับการแยกสีที่ดูคล้ายกันแต่ต่างกันในเชิง Perceptual
+    - **Texture (พื้นผิว):** ใช้ Gabor Filter เพื่อตรวจจับรูปแบบทิศทาง เช่น ขนสัตว์หรือผ้า
+    - **Edge (ขอบ):** ใช้ Canny และ Sobel เพื่อหารอยต่อของ Intensity
+3. **Refinement (การปรับปรุง Mask):** ใช้ Morphological Operations (Opening, Closing, Dilation) เพื่อเชื่อมช่องว่างและกำจัด Noise blob
+4. **Segmentation (การแบ่งกลุ่ม):** ใช้ Watershed Algorithm สำหรับวัตถุที่ทับกัน และ GrabCut สำหรับการดึง Foreground แบบ Iterative
+5. **Detection (การตรวจจับ):** สร้าง Bounding Box จากการวิเคราะห์ Contour และกรองขนาดด้วย Area Filtering
 
 ---
 
-## � Detailed Analysis: 40 Case Technical Descriptions
+## 📂 ประเภทของกรณีทดสอบ
 
-### 🟢 Group 1: Easy Success (E1–E10)
-**Key Strategy:** High-Saturation Color Masking. These cases rely on the object having a distinct, vibrant color that separates it easily from a clean background.
+### 1. ✅ กรณีที่ง่ายและสำเร็จ (E1–E10)
+กรณีที่วัตถุมีสีสด ตัดกับพื้นหลังอย่างชัดเจน
+- **ผลลัพธ์:** แม่นยำใกล้เคียง 100% ด้วย **HSV Color Masking** แบบง่าย
+- **ตัวอย่าง:** แอปเปิ้ลสีแดง, กล้วย, บาสเก็ตบอล, ลูกเทนนิส
 
-*   **E1 Red Apple:** Utilized HSV Dual-Band masking (capturing both ends of the red hue range). The high contrast against the white background allowed for perfect contour detection.
+### 2. ✅ กรณีที่ยากแต่สำเร็จ (D1–D10)
+กรณีที่มีความท้าทาย เช่น Contrast ต่ำ วัตถุใกล้เคียงกับพื้นหลัง หรือวัตถุทับซ้อนกัน
+- **ผลลัพธ์:** สำเร็จได้โดยการผสมเทคนิคหลายอย่างเข้าด้วยกัน เช่น **Distance Transform + Watershed** สำหรับมะนาว หรือ **LAB Fusion + GrabCut** สำหรับหมีขั้วโลก
+- **ตัวอย่าง:** หมีขั้วโลกในหิมะ, กิ้งก่าพรางตัว, ขวดแก้วใส
+
+### 3. ❌ กรณีที่ล้มเหลวตามคาด (FE1–FE10)
+กรณีที่วัตถุกลืนหายไปกับสิ่งแวดล้อมอย่างสมบูรณ์แบบ (Evolutionary Camouflage) — ตั้งใจให้ล้มเหลว
+- **ผลลัพธ์:** ล้มเหลวตามเป้าหมาย แสดงให้เห็นว่าการประมวลผลในระดับ Pixel ไม่เพียงพอ หากไม่มี Semantic Knowledge หรือข้อมูล 3D (Depth)
+- **ตัวอย่าง:** ชุดทหารลายพราง, ปลาแบน (Flounder), แมลงกิ่งไม้
+
+### 4. ❌ กรณีที่ล้มเหลวโดยไม่คาดคิด (FU1–FU10)
+กรณีที่ตามหลักการควรแยกได้ แต่กลับล้มเหลวเพราะ Noise จากสภาพแวดล้อม
+- **ผลลัพธ์:** ล้มเหลวเชิงเทคนิค เช่น เกิดจาก **Specular Highlights** (แก้วกาแฟ), **Wood Grain Noise** (เหรียญ), หรือ **Water Scattering** (ใต้น้ำ)
+- **ข้อสังเกต:** แสดงให้เห็นว่า Threshold ที่ต้อง Tune มือนั้นเปราะบางมากต่อความแปรปรวนของแสงในโลกจริง
+
+---
+
+## 🔍 วิเคราะห์เชิงลึก: รายละเอียดเทคนิคของทั้ง 40 กรณี
+
+### 🟢 กลุ่มที่ 1: ง่ายและสำเร็จ (E1–E10)
+**แนวทางหลัก:** High-Saturation Color Masking — กรณีเหล่านี้ได้เปรียบตรงที่วัตถุมีสีสดโดดเด่น แยกออกจากพื้นหลังได้ง่าย
+
+*   **E1 — แอปเปิ้ลแดง:** ใช้ HSV Dual-Band Masking จับทั้งสองขอบของช่วงสีแดงใน Hue ความ Contrast สูงกับพื้นหลังสีขาวทำให้ Contour Detection แม่นยำมาก
     ![E1](output/E1.png)
-*   **E2 Banana:** Leveraged the bright, saturated yellow hue. Morphological closing was applied to fill small gaps caused by specular highlights on the skin.
+*   **E2 — กล้วย:** อาศัยสีเหลืองสดสว่างของกล้วย ใช้ Morphological Closing เพื่อเชื่อมช่องว่างเล็กน้อยที่เกิดจาก Specular Highlight บนผิวกล้วย
     ![E2](output/E2.png)
-*   **E3 Basketball:** The unique orange hue of a basketball is highly specific. It was easily isolated from gym floors or neutral backgrounds using a narrow Hue band.
+*   **E3 — บาสเก็ตบอล:** สีส้มของบาสเก็ตบอลมีความเฉพาะเจาะจงมาก ใช้ Hue Band แคบๆ แยกออกจากพื้นสนามหรือพื้นหลังสีกลางได้ง่าย
     ![E3](output/E3.png)
-*   **E4 Tennis Ball:** Fluorescent "Optical Yellow" has a specific wavelength (Hue 30-80). This color rarely appears in natural backgrounds, resulting in a very clean mask.
+*   **E4 — ลูกเทนนิส:** สีเหลือง-เขียว Fluorescent (Hue 30-80) มีช่วงความยาวคลื่นที่เฉพาะ แทบไม่ปรากฏในพื้นหลังธรรมชาติ ทำให้ได้ Mask ที่สะอาดมาก
     ![E4](output/E4.png)
-*   **E5 Fire Extinguisher:** Deep industrial red was separated from light-colored walls using a robust HSV range, reinforced by area-based filtering to remove noise.
+*   **E5 — ถังดับเพลิง:** แยกสีแดงเข้มอุตสาหกรรมออกจากผนังสีอ่อนด้วย HSV Range ที่แข็งแกร่ง เสริมด้วย Area Filtering กรอง Noise ออก
     ![E5](output/E5.png)
-*   **E6 Clouds:** Since clouds are achromatic, traditional color masking fails. We used Otsu's Thresholding on Grayscale images to separate bright white clouds from the darker blue sky.
+*   **E6 — เมฆ:** เมฆเป็น Achromatic (ไม่มีสี) จึงใช้ Color Masking ปกติไม่ได้ แก้ด้วยวิธี Otsu's Thresholding บนภาพ Grayscale เพื่อแยกเมฆขาวสว่างออกจากฟ้าสีเข้มกว่า
     ![E6](output/E6.png)
-*   **E7 Pumpkin:** Vibrant orange against a dark background. Morphological opening was used to strip away the green stem, leaving only the fruit body.
+*   **E7 — ฟักทอง:** สีส้มสดบนพื้นหลังมืด ใช้ Morphological Opening เพื่อตัดก้านสีเขียนออก เหลือแค่ส่วนผลไม้
     ![E7](output/E7.png)
-*   **E8 Rose:** The distinct pink/magenta hue was successfully separated from the surrounding green leaves using precise Hue-range targeting.
+*   **E8 — กุหลาบ:** แยก Hue สีชมพู/Magenta ออกจากใบสีเขียวรอบๆ ได้สำเร็จด้วยการกำหนด Hue Range ให้แม่น
     ![E8](output/E8.png)
-*   **E9 Watermelon:** Focused on segmenting the internal red flesh. A specific red-mask was used to ignore the green rind and the surrounding environment.
+*   **E9 — แตงโม:** โฟกัสที่การ Segment เนื้อสีแดงข้างใน ใช้ Red Mask เพื่อข้ามผ่านเปลือกสีเขียวและสิ่งรอบข้าง
     ![E9](output/E9.png)
-*   **E10 Traffic Light:** Targeted the high-intensity green signal. By filtering for both high Saturation and high Value, the active lamp was accurately isolated.
+*   **E10 — ไฟจราจร:** โฟกัสที่สัญญาณไฟสีเขียว Intensity สูง กรองด้วยค่า Saturation และ Value สูงพร้อมกัน เพื่อ Isolate หลอดไฟที่กำลังติดอยู่ได้แม่นยำ
     ![E10](output/E10.png)
 
 ---
 
-### 🟡 Group 2: Difficult Success (D1–D10)
-**Key Strategy:** Advanced Pre-processing & Multi-stage Algorithms. These cases involve low contrast, overlapping objects, or subtle color cues.
+### 🟡 กลุ่มที่ 2: ยากแต่สำเร็จ (D1–D10)
+**แนวทางหลัก:** Advanced Preprocessing & Multi-stage Algorithms — กรณีเหล่านี้มีความท้าทาย เช่น Contrast ต่ำ วัตถุซ้อนทับกัน หรือ Color Cue ที่จาง
 
-*   **D1 White Plate:** White-on-white challenge. Small intensity differences at the rim were captured using Canny edges, followed by GrabCut to extract the plate from the bright tablecloth.
+*   **D1 — จานสีขาว:** ปัญหา White-on-White ความต่างของ Intensity เล็กน้อยที่ขอบจาน ถูกจับได้ด้วย Canny แล้วส่งต่อให้ GrabCut ดึงจานออกจากผ้าปูโต๊ะสีขาว
     ![D1](output/D1.png)
-*   **D2 Mushroom:** Brown mushroom on a forest floor. LAB a-channel (red-green axis) was used to separate the warm mushroom tones from the neutral/cool dirt and leaves.
+*   **D2 — เห็ด:** เห็ดสีน้ำตาลบนพื้นป่า ใช้ LAB a-channel (แกนแดง-เขียว) แยก Tone อุ่นของเห็ดออกจากดินและใบไม้ที่มีโทนเย็นกว่า
     ![D2](output/D2.png)
-*   **D3 Lemons:** Touching instances. Distance Transform was used to find the "peak" of each lemon, which served as seeds for a Watershed algorithm to split overlapping boundaries.
+*   **D3 — มะนาว:** ปัญหาวัตถุชนกัน ใช้ Distance Transform เพื่อหา "ยอด" ของมะนาวแต่ละลูก แล้วใช้เป็น Seed ให้ Watershed Algorithm แบ่งขอบที่ทับกันออก
     ![D3](output/D3.png)
-*   **D4 Polar Bear:** White fur on white snow. CLAHE amplified local fur texture, and LAB b-channel separated the bear's warm tint from the cool, blue-white snow crystals.
+*   **D4 — หมีขั้วโลก:** ขนขาวบนหิมะขาว ใช้ CLAHE ขยาย Texture ของขน และ LAB b-channel แยก Tone อุ่นของหมีออกจากหิมะที่มีโทนเย็น-ฟ้า
     ![D4](output/D4.png)
-*   **D5 Chameleon:** Master of camouflage. Sobel Gradient Magnitude was used to detect the localized, high-frequency texture of scales, which differs from the smooth texture of leaves.
+*   **D5 — กิ้งก่า:** พระเอกด้านพรางตัว ใช้ Sobel Gradient Magnitude เพื่อตรวจจับ Texture ความถี่สูงของเกล็ด ซึ่งแตกต่างจาก Texture เรียบๆ ของใบไม้
     ![D5](output/D5.png)
-*   **D6 Complex Cat:** Cat on a cluttered background. Bilateral filtering removed background noise while preserving the cat's edges, allowing Canny to find a coherent silhouette.
+*   **D6 — แมวในพื้นหลังรก:** ใช้ Bilateral Filtering ลด Noise พื้นหลังโดยยังรักษาขอบของแมวไว้ ทำให้ Canny สามารถหา Silhouette ที่ต่อเนื่องได้
     ![D6](output/D6.png)
-*   **D7 Zebra:** High-contrast patterns. Sobel operators targeted the high-frequency black and white stripes, creating a dense gradient field used to identify the animal's location.
+*   **D7 — ม้าลาย:** ลายทาง Contrast สูง ใช้ Sobel Operator จับ Gradient สนาม Density สูงของลายขาว-ดำ เพื่อระบุตำแหน่งของสัตว์
     ![D7](output/D7.png)
-*   **D8 Street Sign:** Partially occluded by branches. HSV yellow masking was followed by a large Morphological Closing operation to "repair" the sign's shape behind the branches.
+*   **D8 — ป้ายจราจร:** ป้ายถูกบดบังด้วยกิ่งไม้บางส่วน หลัง HSV Yellow Masking ใช้ Morphological Closing ขนาดใหญ่ "ซ่อม" รูปทรงป้ายที่หายไปข้างหลังกิ่ง
     ![D8](output/D8.png)
-*   **D9 Foggy Mountain:** Low contrast due to heavy haze. CLAHE (Dehazing) was used to locally normalize brightness, making the mountain's horizon detectable via Canny.
+*   **D9 — ภูเขาในหมอก:** Contrast ต่ำมากเพราะหมอกหนา ใช้ CLAHE ทำ Dehazing เพื่อปรับ Brightness เฉพาะพื้นที่ ทำให้ขอบฟ้าของภูเขาจับได้ด้วย Canny
     ![D9](output/D9.png)
-*   **D10 Glass Bottle:** Transparency challenge. GrabCut in "Rectangle Mode" was used to iterate on the subtle light refraction patterns at the edges, establishing a solid foreground mask.
+*   **D10 — ขวดแก้ว:** ปัญหา Transparency ใช้ GrabCut ในโหมด Rectangle เพื่อ Iterate จากรูปแบบการหักเหของแสงที่ขอบขวด จนได้ Foreground Mask ที่แน่นหนา
     ![D10](output/D10.png)
 
 ---
 
-### 🔴 Group 3: Failed as Expected (FE1–FE10)
-**Key Strategy:** Evolutionary Camouflage (Zero Signal). In these cases, the object has evolved to share identical color, edge, and texture properties with its environment.
+### 🔴 กลุ่มที่ 3: ล้มเหลวตามคาด (FE1–FE10)
+**แนวทางหลัก:** Evolutionary Camouflage (ไม่มี Signal เลย) — วัตถุเหล่านี้วิวัฒนาการมาเพื่อให้มีสี ขอบ และ Texture เหมือนกับสิ่งแวดล้อมอย่างสมบูรณ์แบบ
 
-*   **FE1 Camo Soldier:** The pattern is designed to break up silhouettes and match the surrounding forest's color and texture frequency, leaving no signal for traditional CV.
+*   **FE1 — ทหารลายพราง:** ลวดลายออกแบบมาเพื่อทำลาย Silhouette และจับคู่กับความถี่ของสีและ Texture ในป่า ไม่มี Signal เหลือสำหรับ Traditional CV เลย
     ![FE1](output/FE1.png)
-*   **FE2 Camo Owl:** The owl's feathers mimic tree bark patterns so perfectly that even Gabor texture analysis sees the image as a single, continuous material.
+*   **FE2 — นกฮูกพรางตัว:** ขนของนกฮูกเลียนแบบลาย Texture ของเปลือกไม้ได้สมบูรณ์แบบมาก แม้แต่ Gabor Texture Analysis ก็มองเห็นภาพทั้งภาพเป็น Texture เดียวกัน
     ![FE2](output/FE2.png)
-*   **FE3 Reef Fish:** Vibrant but fragmented colors match the surrounding coral reef. The algorithm segments the fish into many tiny colorful blobs instead of a single object.
+*   **FE3 — ปลาในปะการัง:** สีสันของปลาแม้จะสวยงามแต่กระจัดกระจาย ตรงกับปะการังรอบๆ Algorithm แตกปลาออกเป็น Blob สีเล็กๆ มากมาย แทนที่จะเป็นวัตถุชิ้นเดียว
     ![FE3](output/FE3.png)
-*   **FE4 Stick Insect:** Both color and "geometric shape" mimic a tree branch. There is no distinguishable difference between the insect's legs and the surrounding twigs.
+*   **FE4 — แมลงกิ่งไม้:** ทั้งสีและ "รูปทรงเรขาคณิต" เลียนแบบกิ่งไม้ ไม่มีความแตกต่างที่แยกแยะได้ระหว่างขาของแมลงกับกิ่งไม้รอบๆ
     ![FE4](output/FE4.png)
-*   **FE5 Red Umbrella:** Placed among a pile of red tomatoes. The Hue, Saturation, and Value are identical, causing the algorithm to merge the umbrella with the produce.
+*   **FE5 — ร่มสีแดงในกองมะเขือเทศ:** Hue, Saturation และ Value เหมือนกันหมด Algorithm รวมร่มเข้ากับมะเขือเทศโดยแยกไม่ออก
     ![FE5](output/FE5.png)
-*   **FE6 Nude Dress:** The dress color matches the subject's skin tone exactly. In every color space, there is no detectable boundary between the person and the garment.
+*   **FE6 — ชุดสีผิว:** สีของชุดตรงกับโทนผิวของผู้สวมใส่พอดี ทุก Color Space ไม่มีขอบที่ตรวจจับได้ระหว่างคนและเสื้อผ้าเลย
     ![FE6](output/FE6.png)
-*   **FE7 Night Scene:** Extreme underexposure. The image data sits at the "noise floor" (near zero intensity), meaning no amount of enhancement can recover the object's shape.
+*   **FE7 — ฉากกลางคืน:** Underexposure รุนแรงมาก ข้อมูลภาพอยู่ที่ "Noise Floor" (ความเข้มใกล้ศูนย์) ไม่มีวิธีการ Enhancement ใดกู้รูปทรงวัตถุกลับมาได้
     ![FE7](output/FE7.png)
-*   **FE8 Sea Turtle:** The turtle's shell pattern mimics the textures of a coral reef. Canny detects the chaotic patterns of the reef and shell as one continuous edge field.
+*   **FE8 — เต่าทะเล:** ลวดลายบนกระดองเต่าเลียนแบบ Texture ของปะการัง Canny ตรวจจับลาย Chaotic ของปะการังและกระดองเป็น Edge Field ต่อเนื่องกัน
     ![FE8](output/FE8.png)
-*   **FE9 Flounder:** A flatfish that partially buries itself in sand. It mimics the color and granularity of the sand so perfectly that it becomes part of the background plane.
+*   **FE9 — ปลาแบน Flounder:** ปลาแบนที่ฝังตัวอยู่ในทราย เลียนแบบสีและ Granularity ของทรายได้สมบูรณ์แบบ จนกลายเป็นส่วนหนึ่งของพื้นหลัง
     ![FE9](output/FE9.png)
-*   **FE10 Dense Crowd:** Overlapping humans in a tight group. Without semantic understanding of "human bodies," traditional CV sees a single, large, chaotic mass of texture.
+*   **FE10 — ฝูงชนหนาแน่น:** มนุษย์ที่ทับซ้อนกันในกลุ่มแน่น หากไม่มี Semantic Understanding ว่า "ร่างกายมนุษย์" คืออะไร Traditional CV จะมองเห็นเป็นก้อน Texture ขนาดใหญ่ก้อนเดียว
     ![FE10](output/FE10.png)
 
 ---
 
-### 🟠 Group 4: Failed but Unexpected (FU1–FU10)
-**Key Strategy:** Environmental Noise & Global Threshold Failure. These cases logically should be possible but are foiled by specific lighting or material artifacts.
+### 🟠 กลุ่มที่ 4: ล้มเหลวโดยไม่คาดคิด (FU1–FU10)
+**แนวทางหลัก:** Environmental Noise & Global Threshold Failure — กรณีเหล่านี้ตามหลักการควรทำได้ แต่กลับพ่ายแพ้ให้กับ Artifacts ของแสงหรือวัสดุโดยเฉพาะ
 
-*   **FU1 Hard-Boiled Egg:** White egg on a white plate. High-quality lighting removes shadow cues, making the boundary pixels identical in intensity. No intensity gradient exists.
+*   **FU1 — ไข่ต้มสุก:** ไข่ขาวบนจานขาว แสงสว่างคุณภาพสูงทำให้ไม่มี Shadow ที่ขอบ Pixel ขอบมี Intensity เหมือนกันหมด ไม่มี Intensity Gradient เหลือเลย
     ![FU1](output/FU1.png)
-*   **FU2 Coin on Wood:** Reflections on a metallic surface. The coin reflects the wood grain of the table, making it appear "transparent" to the segmentation algorithm.
+*   **FU2 — เหรียญบนไม้:** Reflection บนผิวโลหะ เหรียญสะท้อน Grain ของไม้โต๊ะ ทำให้มันดู "โปร่งใส" ต่อ Algorithm
     ![FU2](output/FU2.png)
-*   **FU3 White Mug:** Specular highlights. The bright reflection of lights on the ceramic surface is brighter than the mug itself, creating "holes" in the mask where the light hits.
+*   **FU3 — แก้วกาแฟสีขาว:** Specular Highlights จากแสงไฟที่สะท้อนบนผิวเซรามิก สว่างกว่าตัวแก้วเองด้วยซ้ำ ทำให้เกิด "รู" ใน Mask ตรงจุดที่แสงกระทบ
     ![FU3](output/FU3.png)
-*   **FU4 Black Cat:** Black cat on a black sofa. Both exist in the lowest 5% of the intensity range (Value 0-20). Contrast enhancement fails because the data is too compressed.
+*   **FU4 — แมวดำบนโซฟาดำ:** ทั้งคู่อยู่ในช่วง Intensity ต่ำสุด 5% (Value 0-20) Contrast Enhancement ล้มเหลวเพราะข้อมูลทั้งหมดอัดแน่นอยู่ในช่วงแคบมาก
     ![FU4](output/FU4.png)
-*   **FU5 Bread Loaf:** Brown loaf on a brown board. The shadow cast by the bread has a sharper edge than the bread itself, causing Canny to detect the shadow as the object.
+*   **FU5 — ขนมปังทั้งก้อน:** ขนมปังสีน้ำตาลบนกระดานสีน้ำตาล เงาที่ขนมปังทอดทิ้งมีขอบคมกว่าขนมปังเอง ทำให้ Canny วิ่งตามเงาแทนที่จะวิ่งตามก้อนขนมปัง
     ![FU5](output/FU5.png)
-*   **FU6 Snowy Owl:** Similar to the Polar Bear but with softer edges (downy feathers). This prevents Canny from finding a closed loop for the body silhouette.
+*   **FU6 — นกฮูกหิมะ:** คล้ายหมีขั้วโลก แต่ขนอ่อนนุ่มกว่า (Downy Feather) ทำให้ Canny หาวง Closed Loop ของ Silhouette ร่างกายไม่ได้
     ![FU6](output/FU6.png)
-*   **FU7 Factory Smoke:** Transparency and diffusion. Smoke has no defined "edge." Its boundary is a gradient of transparency that blends into the cloud background.
+*   **FU7 — ควันโรงงาน:** Transparency และ Diffusion ควันไม่มี "ขอบ" ที่ชัดเจน ขอบมันคือ Gradient ของความโปร่งใสที่ค่อยๆ กลืนหายไปกับพื้นหลังเมฆ
     ![FU7](output/FU7.png)
-*   **FU8 Wooden Chair:** Material match. The wood of the chair and the floor share identical grain direction and color, allowing Morphological operations to merge them together.
+*   **FU8 — เก้าอี้ไม้:** Material Match ไม้ของเก้าอี้และพื้นมี Grain Direction และสีเหมือนกัน ทำให้ Morphological Operations รวมทั้งสองเข้าด้วยกัน
     ![FU8](output/FU8.png)
-*   **FU9 Underwater:** Light scattering (haze). Water acts as a blue-green color filter and a diffuser, destroying contrast and making edges blurry and undetectable.
+*   **FU9 — ใต้น้ำ:** Light Scattering (Haze) น้ำทำหน้าที่เป็น Blue-Green Filter และ Diffuser ทำลาย Contrast และทำให้ขอบต่างๆ เบลอจนตรวจจับไม่ได้
     ![FU9](output/FU9.png)
-*   **FU10 Orange Cat:** Color and texture overlap. The cat's stripes align with the fabric weave of the sofa, confusing Gabor and edge analysis into seeing a single textural plane.
+*   **FU10 — แมวสีส้ม:** Color และ Texture ทับซ้อนกัน ลายของแมวตรงกับทิศทางการทอผ้าของโซฟา ทำให้ Gabor และ Edge Analysis เห็นเป็น Texture plane เดียวกัน
     ![FU10](output/FU10.png)
 
 ---
 
-## �📊 Summary Table: 40 Cases
+## 📊 ตารางสรุป: 40 กรณีทดสอบ
 
-| # | Case | Technique(s) | Key Parameters |
-|---|------|-------------|----------------|
-| **E1** | Red Apple | HSV Dual-Band Red + Morphology | Hue[0-10, 160-180], Sat[120-255] |
-| **E2** | Banana | HSV Yellow Range + Morphology | Hue[20-35], Sat[105-255] |
-| **E3** | Basketball | HSV Orange Range + Morphology | Hue[5-25], Sat[180-255] |
-| **E4** | Tennis Ball | HSV Yellow-Green + Morphology | Hue[30-80], Sat[60-255] |
-| **E5** | Fire Extinguisher | HSV Dual-Band Red + Large Morphology | Hue[0-12, 158-180], Sat[120-255] |
-| **E6** | Clouds | Grayscale + Gaussian Blur + Otsu | Blur(5x5), Otsu auto |
-| **E7** | Pumpkin | HSV Orange + Morphological Open/Close | Hue[6-18], Sat[130-255] |
-| **E8** | Rose | HSV Pink Range + Morphological Ops | Hue[170-175], Sat[120-200] |
-| **E9** | Watermelon | HSV Dual-Band Red + Large Morph Close | Hue[0-12, 165-180] |
-| **E10** | Traffic Light | HSV Bright Green (High Value) | Hue[45-90], Val[180-255] |
-| **D1** | White Plate | Canny Edge Detection + GrabCut Seed | Canny(40,110), 10 iterations |
-| **D2** | Mushroom | LAB a-channel Threshold + Morphology | A > 145 (pink/brown) |
-| **D3** | Lemons | HSV + Distance Transform + Watershed | Dist Threshold(0.65xMax) |
-| **D4** | Polar Bear | CLAHE + LAB Fusion + GrabCut Refinement | CLAHE(2.5), GrabCut(5 iter) |
-| **D5** | Chameleon | HSV Threshold + Sobel Gradient | Threshold(18) |
-| **D6** | Cat (Complex) | Canny + Contour Fill + Large Morphology | Canny(20,80), Close(15x15) |
-| **D7** | Zebra | Sobel Gradient Magnitude + Threshold | Threshold(52) |
-| **D8** | Street Sign | HSV Yellow + Morphological Close | Hue[170-180], Sat[90-255] |
-| **D9** | Foggy Mountain | CLAHE + Low-Threshold Canny | Canny(15,50), CLAHE(4.0) |
-| **D10** | Glass Bottle | Canny + Morph Close + GrabCut | 5 iterations, Rect mode |
-| **FE1** | Camouflage Soldier | HSV + Canny | Failed (Pattern matching bg) |
-| **FE2** | Camouflaged Owl | HSV + Canny + Gabor Texture | Failed (Texture mimicry) |
-| **FE3** | Reef Fish | RGB / HSV Colorphase Masking | Failed (Complex background) |
-| **FE4** | Stick Insect | HSV + Gabor Filter Bank | Failed (Shape/Texture) |
-| **FE5** | Red Umbrella | HSV Red Band Masking | Failed (Color mimicry) |
-| **FE6** | Nude Dress | HSV Skin-Tone Range | Failed (Color matching skin) |
-| **FE7** | Night Scene | Low-Intensity Intensity Thresholding | Failed (Extreme darkness) |
-| **FE8** | Sea Turtle | HSV + Gabor Texture Energy | Failed (Pattern overlap) |
-| **FE9** | Flounder Fish | Gabor Texture + HSV | Failed (Perfect matching) |
-| **FE10** | Dense Crowd | Canny Edge Density | Failed (Semantic overlap) |
-| **FU1** | Hard-Boiled Egg | HSV + Canny + LAB + Adaptive | Failed (White on White) |
-| **FU2** | Coin on Wood | CLAHE + Canny + Morphology | Failed (Wood Grain Noise) |
-| **FU3** | White Coffee Mug | Canny + Otsu + Adaptive | Failed (Specular Highlights) |
-| **FU4** | Black Cat | Dark HSV + Canny + Gabor + CLAHE | Failed (Same Dark Color) |
-| **FU5** | Bread Loaf | Brown HSV Mask + Canny | Failed (Shadow/Grain) |
-| **FU6** | Snowy Owl | HSV + LAB b-ch + Canny + Gabor | Failed (White on White) |
-| **FU7** | Factory Smoke | HSV + Gabor + Sobel Gradient | Failed (Transparency/Clouds) |
-| **FU8** | Wooden Chair | HSV + Canny + LAB + Adaptive | Failed (Material/Texture match) |
-| **FU9** | Underwater | LAB + Canny + HSV + CLAHE | Failed (Scattering/Cast) |
-| **FU10** | Orange Cat | HSV + Sobel + Canny + LAB | Failed (Color/Texture overlap) |
+| # | กรณี | เทคนิคที่ใช้ | พารามิเตอร์สำคัญ |
+|---|------|-------------|-------------------|
+| **E1** | แอปเปิ้ลแดง | HSV Dual-Band Red + Morphology | Hue[0-10, 160-180], Sat[120-255] |
+| **E2** | กล้วย | HSV Yellow Range + Morphology | Hue[20-35], Sat[105-255] |
+| **E3** | บาสเก็ตบอล | HSV Orange Range + Morphology | Hue[5-25], Sat[180-255] |
+| **E4** | ลูกเทนนิส | HSV Yellow-Green + Morphology | Hue[30-80], Sat[60-255] |
+| **E5** | ถังดับเพลิง | HSV Dual-Band Red + Large Morphology | Hue[0-12, 158-180], Sat[120-255] |
+| **E6** | เมฆ | Grayscale + Gaussian Blur + Otsu | Blur(5x5), Otsu auto |
+| **E7** | ฟักทอง | HSV Orange + Morphological Open/Close | Hue[6-18], Sat[130-255] |
+| **E8** | กุหลาบ | HSV Pink Range + Morphological Ops | Hue[170-175], Sat[120-200] |
+| **E9** | แตงโม | HSV Dual-Band Red + Large Morph Close | Hue[0-12, 165-180] |
+| **E10** | ไฟจราจร | HSV Bright Green (High Value) | Hue[45-90], Val[180-255] |
+| **D1** | จานสีขาว | Canny Edge Detection + GrabCut Seed | Canny(40,110), 10 iterations |
+| **D2** | เห็ด | LAB a-channel Threshold + Morphology | A > 145 (pink/brown) |
+| **D3** | มะนาว | HSV + Distance Transform + Watershed | Dist Threshold(0.65xMax) |
+| **D4** | หมีขั้วโลก | CLAHE + LAB Fusion + GrabCut Refinement | CLAHE(2.5), GrabCut(5 iter) |
+| **D5** | กิ้งก่า | HSV Threshold + Sobel Gradient | Threshold(18) |
+| **D6** | แมว (ซับซ้อน) | Canny + Contour Fill + Large Morphology | Canny(20,80), Close(15x15) |
+| **D7** | ม้าลาย | Sobel Gradient Magnitude + Threshold | Threshold(52) |
+| **D8** | ป้ายจราจร | HSV Yellow + Morphological Close | Hue[170-180], Sat[90-255] |
+| **D9** | ภูเขาในหมอก | CLAHE + Low-Threshold Canny | Canny(15,50), CLAHE(4.0) |
+| **D10** | ขวดแก้ว | Canny + Morph Close + GrabCut | 5 iterations, Rect mode |
+| **FE1** | ทหารลายพราง | HSV + Canny | ล้มเหลว (Pattern matching bg) |
+| **FE2** | นกฮูกพรางตัว | HSV + Canny + Gabor Texture | ล้มเหลว (Texture mimicry) |
+| **FE3** | ปลาในปะการัง | RGB / HSV Colorphase Masking | ล้มเหลว (Complex background) |
+| **FE4** | แมลงกิ่งไม้ | HSV + Gabor Filter Bank | ล้มเหลว (Shape/Texture) |
+| **FE5** | ร่มสีแดง | HSV Red Band Masking | ล้มเหลว (Color mimicry) |
+| **FE6** | ชุดสีผิว | HSV Skin-Tone Range | ล้มเหลว (Color matching skin) |
+| **FE7** | ฉากกลางคืน | Low-Intensity Thresholding | ล้มเหลว (Extreme darkness) |
+| **FE8** | เต่าทะเล | HSV + Gabor Texture Energy | ล้มเหลว (Pattern overlap) |
+| **FE9** | ปลาแบน Flounder | Gabor Texture + HSV | ล้มเหลว (Perfect matching) |
+| **FE10** | ฝูงชนหนาแน่น | Canny Edge Density | ล้มเหลว (Semantic overlap) |
+| **FU1** | ไข่ต้มสุก | HSV + Canny + LAB + Adaptive | ล้มเหลว (White on White) |
+| **FU2** | เหรียญบนไม้ | CLAHE + Canny + Morphology | ล้มเหลว (Wood Grain Noise) |
+| **FU3** | แก้วกาแฟสีขาว | Canny + Otsu + Adaptive | ล้มเหลว (Specular Highlights) |
+| **FU4** | แมวดำ | Dark HSV + Canny + Gabor + CLAHE | ล้มเหลว (Same Dark Color) |
+| **FU5** | ขนมปังทั้งก้อน | Brown HSV Mask + Canny | ล้มเหลว (Shadow/Grain) |
+| **FU6** | นกฮูกหิมะ | HSV + LAB b-ch + Canny + Gabor | ล้มเหลว (White on White) |
+| **FU7** | ควันโรงงาน | HSV + Gabor + Sobel Gradient | ล้มเหลว (Transparency/Clouds) |
+| **FU8** | เก้าอี้ไม้ | HSV + Canny + LAB + Adaptive | ล้มเหลว (Material/Texture match) |
+| **FU9** | ใต้น้ำ | LAB + Canny + HSV + CLAHE | ล้มเหลว (Scattering/Cast) |
+| **FU10** | แมวสีส้ม | HSV + Sobel + Canny + LAB | ล้มเหลว (Color/Texture overlap) |
 
 ---
 
-### 💡 Key Learning Points
-1. **Color-based methods (HSV)** work best when objects have *unique, saturated hue* different from background.
-2. **Edge-based methods (Canny, Sobel)** work when objects have clear *intensity discontinuity* at boundaries.
-3. **Morphological operations** are critical post-processors that bridge gaps and remove noise.
-4. **Watershed + Distance Transform** separates touching/overlapping same-color objects.
-5. **CLAHE** rescues low-contrast/foggy images by locally normalizing brightness.
-6. **Gabor filters** detect texture-based boundaries when color is insufficient.
-7. **LAB color space** better separates perceptually different colors that look close in HSV/RGB.
-8. **Traditional methods fundamentally lack** semantic understanding — they cannot reason about *what* or *where* objects conceptually are.
+### 💡 สิ่งที่เรียนรู้จากการทดลองนี้
+
+1. **วิธีอิงสี (HSV)** ได้ผลดีที่สุดเมื่อวัตถุมี *Hue ที่เฉพาะและสดใส* แตกต่างจากพื้นหลังอย่างชัดเจน
+2. **วิธีอิงขอบ (Canny, Sobel)** ได้ผลเมื่อวัตถุมี *Intensity Discontinuity* ที่ชัดเจนที่ขอบ
+3. **Morphological Operations** เป็น Post-processor ที่สำคัญมาก ช่วยเชื่อมช่องว่างและกำจัด Noise
+4. **Watershed + Distance Transform** แยกวัตถุที่ชนกันหรือทับซ้อนกันและมีสีเดียวกันออกจากกันได้
+5. **CLAHE** ช่วยกู้ภาพที่ Contrast ต่ำหรือมีหมอกได้ โดยการ Normalize ความสว่างแบบ Local
+6. **Gabor Filter** ตรวจจับขอบที่อิง Texture ได้ในกรณีที่ข้อมูลสีไม่เพียงพอ
+7. **LAB Color Space** แยกสีที่ต่างกันในเชิง Perceptual ได้ดีกว่า HSV/RGB ในบางกรณี
+8. **ข้อจำกัดพื้นฐานของ Traditional Method** คือ ขาด Semantic Understanding — ไม่สามารถ "เข้าใจ" ได้ว่าวัตถุในภาพคืออะไรหรืออยู่ที่ไหนในเชิงความหมาย
