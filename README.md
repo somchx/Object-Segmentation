@@ -20,13 +20,13 @@
 
 Pipeline หลักที่ใช้ในการทดลองนี้เป็น Computer Vision แบบ Traditional ประกอบด้วย 5 ขั้นตอนหลัก ดังนี้
 
-1. **Preprocessing (การเตรียมภาพ):** ลด Noise ด้วย Gaussian/Bilateral Blur และเพิ่ม Contrast ด้วย CLAHE
+1. **Preprocessing (การเตรียมภาพ):** ลด Noise ด้วย Gaussian/Median Blur และเพิ่ม Contrast ด้วย Normalization
 2. **Feature Extraction (การดึงคุณลักษณะ):**
     - **Color (สี):** ใช้ HSV สำหรับการทำ Hue-based Masking และ LAB สำหรับการแยกสีที่ดูคล้ายกันแต่ต่างกันในเชิง Perceptual
-    - **Texture (พื้นผิว):** ใช้ Gabor Filter เพื่อตรวจจับรูปแบบทิศทาง เช่น ขนสัตว์หรือผ้า
+    - **Texture (พื้นผิว):** ใช้ Custom Filter เพื่อตรวจจับรูปแบบทิศทาง เช่น ขนสัตว์หรือผ้า
     - **Edge (ขอบ):** ใช้ Canny และ Sobel เพื่อหารอยต่อของ Intensity
 3. **Refinement (การปรับปรุง Mask):** ใช้ Morphological Operations (Opening, Closing, Dilation) เพื่อเชื่อมช่องว่างและกำจัด Noise blob
-4. **Segmentation (การแบ่งกลุ่ม):** ใช้ Watershed Algorithm สำหรับวัตถุที่ทับกัน และ GrabCut สำหรับการดึง Foreground แบบ Iterative
+4. **Segmentation (การแบ่งกลุ่ม):** ใช้ Watershed Algorithm สำหรับวัตถุที่ทับกัน และ Thresholding สำหรับการดึง Foreground แบบ Iterative
 5. **Detection (การตรวจจับ):** สร้าง Bounding Box จากการวิเคราะห์ Contour และกรองขนาดด้วย Area Filtering
 
 ---
@@ -40,7 +40,7 @@ Pipeline หลักที่ใช้ในการทดลองนี้�
 
 ### 2. ✅ กรณีที่ยากแต่สำเร็จ (D1–D10)
 กรณีที่มีความท้าทาย เช่น Contrast ต่ำ วัตถุใกล้เคียงกับพื้นหลัง หรือวัตถุทับซ้อนกัน
-- **ผลลัพธ์:** สำเร็จได้โดยการผสมเทคนิคหลายอย่างเข้าด้วยกัน เช่น **Distance Transform + Watershed** สำหรับมะนาว หรือ **LAB Fusion + GrabCut** สำหรับหมีขั้วโลก
+- **ผลลัพธ์:** สำเร็จได้โดยการผสมเทคนิคหลายอย่างเข้าด้วยกัน เช่น **Distance Transform + Watershed** สำหรับมะนาว หรือ **LAB Fusion + Thresholding** สำหรับหมีขั้วโลก
 - **ตัวอย่าง:** หมีขั้วโลกในหิมะ, กิ้งก่าพรางตัว, ขวดแก้วใส
 
 ### 3. ❌ กรณีที่ล้มเหลวตามคาด (FE1–FE10)
@@ -141,12 +141,12 @@ Pipeline หลักที่ใช้ในการทดลองนี้�
   ![E10](output/E10.png)
 
 ### 🟡 กลุ่มที่ 2: ยากแต่สำเร็จ (D1–D10)
-**แนวทางหลัก:** กรณีเหล่านี้มีความท้าทายจาก Contrast ที่ต่ำ หรือความกลมกลืนกับพื้นหลัง แต่สามารถแก้ปัญหาได้ด้วยการใช้ Advanced Filters, Image Fusion หรือ Iterative Segmentation (เช่น GrabCut, Watershed)
+**แนวทางหลัก:** กรณีเหล่านี้มีความท้าทายจาก Contrast ที่ต่ำ หรือความกลมกลืนกับพื้นหลัง แต่สามารถแก้ปัญหาได้ด้วยการใช้ Advanced Filters, Image Fusion หรือ Iterative Segmentation (เช่น Thresholding, Watershed)
 
 #### D1 – จานสีขาวบนผ้าปูโต๊ะที่สว่างมาก
 - **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแหล่งที่มา](https://share.google/ZepDCx9BEFsNNx0wv)
 - **วัตถุเป้าหมายที่ต้องการตรวจจับ:** จานสีขาวบนผ้าปูโต๊ะที่สว่างมาก
-- **เทคนิคและพารามิเตอร์ที่ใช้:** Bilateral Filter, Canny Edge Detection, Hough Circle Transform, GrabCut Refinement
+- **เทคนิคและพารามิเตอร์ที่ใช้:** Median Blur, Canny Edge Detection, Hough Circle Transform, Thresholding Refinement
 - **ความยากที่พบ (Difficulty):** Contrast ต่ำมาก, สีกลมกลืนกับสิ่งแวดล้อม ทำให้แยกความแตกต่างได้ยาก
 - **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
   > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
@@ -218,7 +218,7 @@ Pipeline หลักที่ใช้ในการทดลองนี้�
 #### D9 – ทิวทัศน์หมอกหนา — ตรวจจับภูเขา/เส้นขอบฟ้า
 - **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแหล่งที่มา](https://pin.it/5Zv5rxRCh)
 - **วัตถุเป้าหมายที่ต้องการตรวจจับ:** ทิวทัศน์หมอกหนา — ตรวจจับภูเขา/เส้นขอบฟ้า
-- **เทคนิคและพารามิเตอร์ที่ใช้:** CLAHE + Canny with low thresholds + Probabilistic Hough Transform
+- **เทคนิคและพารามิเตอร์ที่ใช้:** Normalization + Canny with low thresholds + Probabilistic Hough Transform
 - **ความยากที่พบ (Difficulty):** Contrast ต่ำรุนแรงจากหมอก ทำให้เส้นขอบเขตไม่มีความชัดเจน
 - **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
   > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
@@ -227,7 +227,7 @@ Pipeline หลักที่ใช้ในการทดลองนี้�
 #### D10 – ขวดแก้วใส
 - **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแหล่งที่มา](https://share.google/iNFBvuNFjRGHVs5OR)
 - **วัตถุเป้าหมายที่ต้องการตรวจจับ:** ขวดแก้วใส
-- **เทคนิคและพารามิเตอร์ที่ใช้:** Canny Edge + GrabCut
+- **เทคนิคและพารามิเตอร์ที่ใช้:** Canny Edge + Thresholding
 - **ความยากที่พบ (Difficulty):** วัตถุมีความโปร่งใส สะท้อนสิ่งรอบข้าง และไม่มีสีที่ชัดเจนแน่นอน
 - **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
   > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
@@ -254,7 +254,7 @@ Pipeline หลักที่ใช้ในการทดลองนี้�
 - **วัตถุเป้าหมายที่ต้องการตรวจจับ:** นกฮูกพรางตัวบนเปลือกไม้
 - **การทดลองที่ได้ลองทำมาแล้ว:**
   - พยายามแยกช่วงสี HSV (สีน้ำตาล/เทา)
-  - พยายามใช้ Gabor Filter ตรวจจับ Texture ขนนกเทียบกับเปลือกไม้
+  - พยายามใช้ Custom Filter ตรวจจับ Texture ขนนกเทียบกับเปลือกไม้
   - พยายามใช้ Sobel Gradient หาความถี่ของ Texture ขน
 - **สาเหตุที่ไม่สำเร็จ:** (ตามที่คาดไว้) ลวดลายขนนกฮูกมีวิวัฒนาการมาเพื่อเลียนแบบ Texture และสีของเปลือกไม้โดยเฉพาะ ทำให้แยกความแตกต่างในระดับ Pixel ออกจากกันแทบไม่ได้
 - **ความคิดเห็น (เทคนิคความสามารถพิเศษที่จำเป็น):** จำเป็นต้องใช้ความสามารถด้าน Semantic Understanding โดยอาศัย Deep Learning ที่เข้าใจภาพรวมโครงสร้างมากกว่าการพึ่งพา Texture เพียงอย่างเดียว
@@ -281,7 +281,7 @@ Pipeline หลักที่ใช้ในการทดลองนี้�
 - **การทดลองที่ได้ลองทำมาแล้ว:**
   - พยายามตรวจจับระดับขอบด้วย Canny Edge
   - พยายามใช้ Morphological Thinning / Skeletonization หาโครงร่างแมลง
-  - พยายามใช้ Gabor Responses หา Texture เปลือกไม้เทียบกับเปลือกแมลง
+  - พยายามใช้ Custom Filter Responses หา Texture เปลือกไม้เทียบกับเปลือกแมลง
 - **สาเหตุที่ไม่สำเร็จ:** (ตามที่คาดไว้) แมลงมีลักษณะทางชีวภาพ Texture พรางตัวเหมือนเปลือกไม้แทบทุกประการ
 - **ความคิดเห็น (เทคนิคความสามารถพิเศษที่จำเป็น):** จำเป็นต้องใช้กล้องตรวจจับ 3 มิติ (Depth Camera / LiDAR) หรือโมเดล Deep Learning ที่มีความรู้ระดับสูงเพื่อแยกแมลงออกมาจากเปลือกไม้
 - **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
@@ -318,7 +318,7 @@ Pipeline หลักที่ใช้ในการทดลองนี้�
 - **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแหล่งที่มา](https://share.google/AGMcw5aU4iuqoEnfZ)
 - **วัตถุเป้าหมายที่ต้องการตรวจจับ:** ฉากกลางคืน — ตรวจจับตัวรถ
 - **การทดลองที่ได้ลองทำมาแล้ว:**
-  - เพิ่มความสว่างด้วย CLAHE Histogram Equalization สูงสุด
+  - เพิ่มความสว่างด้วย Normalization สูงสุด
   - การทำ Gamma Correction เพื่อดันให้ภาพความมืดสว่างขึ้น
   - Low-Intensity Thresholding โดยตรง
 - **สาเหตุที่ไม่สำเร็จ:** (ตามที่คาดไว้) สภาพแสงต่ำเกิดความมืดจนสูญเสียข้อมูล Intensity ข้อมูลมืดไปทั้งหมด ตัวรถจึงไม่มีคอนทราสต์ที่แยกจากเงามืดถนน
@@ -333,7 +333,7 @@ Pipeline หลักที่ใช้ในการทดลองนี้�
 - **การทดลองที่ได้ลองทำมาแล้ว:**
   - พยายามหาค่า HSV ช่วงโทนสีน้ำตาล-เขียวอมเหลือง
   - การทำ Canny Edge Detection ครอบคลุมภาพ
-  - การใช้ Gabor Texture Energy (เพื่อดึง Texture กระดองเต่า)
+  - การใช้ Custom Filter Texture Energy (เพื่อดึง Texture กระดองเต่า)
 - **สาเหตุที่ไม่สำเร็จ:** (ตามที่คาดไว้) ลายกระดองเต่าและสไตล์สีน้ำตาลทับเหลืองนั้นกลมกลืนกับปะการังรอบข้างแบบสมบูรณ์ จึงไม่สามารถพึ่งพาสีระดับ Pixel ในการตรวจจับได้อย่างเดียว
 - **ความคิดเห็น (เทคนิคความสามารถพิเศษที่จำเป็น):** จำเป็นต้องใช้แบบจำลอง Deep Learning ตระกูล Mask R-CNN หรือโมเดลที่มีชุดข้อมูลความหนาแน่นสูงถึงจะแยกทรงเต่าได้
 - **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
@@ -345,7 +345,7 @@ Pipeline หลักที่ใช้ในการทดลองนี้�
 - **วัตถุเป้าหมายที่ต้องการตรวจจับ:** ปลาซีกเดียว (Flounder) บนพื้นทราย
 - **การทดลองที่ได้ลองทำมาแล้ว:**
   - ตรวจจับขอบ Canny จากทรายขึ้นมา
-  - พยายามดึง Gabor Texture Filter เพื่อตีกรอบรูปร่างปลาจากเม็ดทรายที่มีทิศต่างกันนิดหน่อย
+  - พยายามดึง Custom Texture Filter เพื่อตีกรอบรูปร่างปลาจากเม็ดทรายที่มีทิศต่างกันนิดหน่อย
   - ทำวง Contour ในตัวปลาจากขอบ
 - **สาเหตุที่ไม่สำเร็จ:** (ตามที่คาดไว้) ปลามีวิวัฒนาการพรางตัวบนทรายได้สมบูรณ์ Texture เม็ดทรายและสีเม็ดทรายบนลำตัวปลากับพื้นคือน้ำยาตัวเดียวกัน 
 - **ความคิดเห็น (เทคนิคความสามารถพิเศษที่จำเป็น):** อาจต้องพึ่งพาคุณสมบัติวิดีโอ (Motion / Optical Flow) ในแบบจำลอง Deep Learning เพราะภาพนิ่งนั้นเนียนไปกับทรายเกินไป
@@ -389,7 +389,7 @@ Pipeline หลักที่ใช้ในการทดลองนี้�
 - **การทดลองที่ได้ลองทำมาแล้ว:**
   - การใช้ Hough Circle Transform (หาเหรียญที่เป็นโครงสร้างกลม)
   - Canny Edge Detection (หาวงโลหะขอบเหรียญ)
-  - CLAHE (ปรับความสว่างแบบ Local ให้ขอบเหรียญเด่นขึ้น)
+  - Normalization (ปรับความสว่างแบบ Local ให้ขอบเหรียญเด่นขึ้น)
 - **สาเหตุที่ไม่สำเร็จ:** คาดว่าเหรียญเงินโลหะน่าจะหาขอบได้ง่ายๆ ด้วย Canny / Contour => กลายเป็นว่า: แสงสะท้อนจากโลหะดูดกลืนภาพลายไม้รอบๆ เข้าไปเป็นส่วนหนึ่งของรอยสะท้อนบนหน้าเหรียญ Edge จึงพัง
 - **ความคิดเห็น (เทคนิคความสามารถพิเศษที่จำเป็น):** โมเดล Deep Learning น่าจะสามารถแยกหมวดหมู่วัตถุ (Object Classification) ลายไม้จากลายเงินสะท้อนได้ง่ายกว่ากล้องประมวลผลโลคัล
 - **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
@@ -415,8 +415,8 @@ Pipeline หลักที่ใช้ในการทดลองนี้�
 - **การทดลองที่ได้ลองทำมาแล้ว:**
   - Dark Region Threshold (ดึงข้อมูลสีคล้ำต่ำๆ จากภาพ)
   - Canny Edge (หาช่องว่างกางกรอบเส้นขนแมว)
-  - Gabor Texture Filter (หาความถี่ทรงขนของแมวเทียบกับ Texture เรียบของโซฟา)
-  - ใช้งาน CLAHE ร่วมกับ Otsu ในส่วนของภาพ LAB L-Channel (ขยาย Contrast แสงที่ดำสนิทออกมาก)
+  - Custom Texture Filter (หาความถี่ทรงขนของแมวเทียบกับ Texture เรียบของโซฟา)
+  - ใช้งาน Normalization ร่วมกับ Otsu ในส่วนของภาพ LAB L-Channel (ขยาย Contrast แสงที่ดำสนิทออกมาก)
 - **สาเหตุที่ไม่สำเร็จ:** คาดว่าแมวตัวดำมีหูมีรูปทรงและขนแตกต่าง คอนทัวร์น่าจะทำงานได้อยู่แล้ว => กลายเป็นว่า: แมวและสีโซกาดำสนิทเป็นเบอร์ที่มิดเกินไป เส้นขอบขน Texture ไม่มีความแตกต่างสะท้อนออกมาให้จับเลย
 - **ความคิดเห็น (เทคนิคความสามารถพิเศษที่จำเป็น):** เซ็นเซอร์ภาพประเภทอินฟราเรดความร้อน (Thermal Camera) คือเทคนิคสำคัญในการเปิดเผยความร้อนของตัวสัตว์เลี้ยงออกจากผ้าปูที่นอนสีมืด
 - **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
@@ -443,7 +443,7 @@ Pipeline หลักที่ใช้ในการทดลองนี้�
   - สร้างมาสก์ HSV Brightness Threshold (หาพื้นที่สีขาวในภาพตัวนก)
   - สร้าง Threshold เหมืองช่องสัญญาณ LAB b-channel (หาเสี้ยวของขนนกที่จะมีสีอุ่นกว่าหิมะเพียงเสี้ยวเดียว)
   - ใช้ Canny Edge (วงหานกฮูกหน้ากลม)
-  - ประยุกต์ Gabor Texture Filter (เปรียบเทียบเส้นใยขนนุ่มกับเม็ดหิมะ)
+  - ประยุกต์ Custom Texture Filter (เปรียบเทียบเส้นใยขนนุ่มกับเม็ดหิมะ)
 - **สาเหตุที่ไม่สำเร็จ:** คาดว่านกมีดวงตา มีปีกหน้ากลมน่าจะดักจับ Contour วงโค้งมนได้ => กลายเป็นว่า: ขนขาวเรียบลื่นสีเดียวกับหิมะรอบข้าง Color Space ขาวไปหมดจนกลืนกินรูปทรงไปหมด
 - **ความคิดเห็น (เทคนิคความสามารถพิเศษที่จำเป็น):** โมเดล Instance Segmentation หรือการตรวจจับเคลื่อนไหว (Motion Sensing) ในแบบวิดีโอคือจุดสำคัญในการแยกวัตถุที่นิ่งอยู่ออกมา
 - **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
@@ -456,7 +456,7 @@ Pipeline หลักที่ใช้ในการทดลองนี้�
 - **การทดลองที่ได้ลองทำมาแล้ว:**
   - คัดกรองผ่าน HSV Gray/White Mask (ควันมักเป็นสีเทาจางสว่าง)
   - ใช้ Low-Saturation Threshold
-  - ใช้ Multi-scale Gabor Filter (กรองหาทิศทางก้อนควันและลักษณะหมอกเมฆ)
+  - ใช้ Multi-scale Custom Filter (กรองหาทิศทางก้อนควันและลักษณะหมอกเมฆ)
   - ใช้ Sobel Gradient Magnitude (ตีขอบก้อนลอยในอากาศ)
 - **สาเหตุที่ไม่สำเร็จ:** คาดว่าเงาควันที่ต่อจากเครื่องพ่นปล่องจะสร้างโครงสร้างรูปกรวยควันให้ Canny ดักจับได้ => กลายเป็นว่า: แสงเย็นอุ่นรวบรวมควันเทากับเมฆเป็นสีส้มทองกลืนกลายเป็นบรรยากาศแว่นเดียวกัน ไม่มีขอบเขตทิศทางชัดเจน
 - **ความคิดเห็น (เทคนิคความสามารถพิเศษที่จำเป็น):** ข้อมูลทรรศนวิสัยเคลื่อนที่ (Optical flow) ของแบบจำลองวิดีโอสามารถตรวจทิศเทควันโรงงานได้อย่างมีประสิทธิภาพ หรือการวิเคราะห์อากาศศาสตร์ผ่านโมเดล
@@ -484,7 +484,7 @@ Pipeline หลักที่ใช้ในการทดลองนี้�
   - สร้าง LAB Dark-Region Mask (แยกวัตถุทึบแสงที่บังแสงน้ำอยู่)
   - ทำ Canny Edge Detection ทรงโลมา
   - สร้าง HSV Blue-Green Suppression สำหรับลบคลื่นน้ำทะเลออกจากกรอบความคิดพิกเซล
-  - กู้ภาพสีขึ้นมาด้วย CLAHE + Adaptive Threshold
+  - กู้ภาพสีขึ้นมาด้วย Normalization + Adaptive Threshold
 - **สาเหตุที่ไม่สำเร็จ:** คาดน่าจะใช้วิธีหาจุดทึบ LAB แล้ววง Canny หาเส้นโอบอ้อมได้ => กลายเป็นว่า: การกระเจิงของโฟตอนใต้น้ำ ทำให้พิกเซลเปียกแสงมัวเขียวๆ ฟุ้งไปหมดไม่ปรากฏขอบเส้นอย่างเสถียร
 - **ความคิดเห็น (เทคนิคความสามารถพิเศษที่จำเป็น):** ต้องอาศัยระบบการเรนเดอร์และโมเดลที่ฝึกมาเพื่อ Underwater Computer Vision หรือระบบตรวจจับคลื่นสัญญาณโซนาร์แบบเรือดำน้ำ (Acoustic Images / SONAR)
 - **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
@@ -519,35 +519,35 @@ Pipeline หลักที่ใช้ในการทดลองนี้�
 | **E8** | กุหลาบ | HSV Pink Range + Morphological Ops | Hue[170-175], Sat[120-200] |
 | **E9** | แตงโม | HSV Dual-Band Red + Large Morph Close | Hue[0-12, 165-180] |
 | **E10** | ไฟจราจร | HSV Bright Green (High Value) | Hue[45-90], Val[180-255] |
-| **D1** | จานสีขาว | Canny Edge Detection + GrabCut Seed | Canny(40,110), 10 iterations |
+| **D1** | จานสีขาว | Canny Edge Detection + Thresholding Seed | Canny(40,110), Morphological Ops |
 | **D2** | เห็ด | LAB a-channel Threshold + Morphology | A > 145 (pink/brown) |
 | **D3** | มะนาว | HSV + Distance Transform + Watershed | Dist Threshold(0.65xMax) |
-| **D4** | หมีขั้วโลก | CLAHE + LAB Fusion + GrabCut Refinement | CLAHE(2.5), GrabCut(5 iter) |
+| **D4** | หมีขั้วโลก | Normalization + LAB Fusion + Thresholding Refinement | Normalization(2.5), Thresholding(5 iter) |
 | **D5** | กิ้งก่า | HSV Threshold + Sobel Gradient | Threshold(18) |
 | **D6** | แมว (ซับซ้อน) | Canny + Contour Fill + Large Morphology | Canny(20,80), Close(15x15) |
 | **D7** | ม้าลาย | Sobel Gradient Magnitude + Threshold | Threshold(52) |
 | **D8** | ป้ายจราจร | HSV Yellow + Morphological Close | Hue[170-180], Sat[90-255] |
-| **D9** | ภูเขาในหมอก | CLAHE + Low-Threshold Canny | Canny(15,50), CLAHE(4.0) |
-| **D10** | ขวดแก้ว | Canny + Morph Close + GrabCut | 5 iterations, Rect mode |
+| **D9** | ภูเขาในหมอก | Normalization + Low-Threshold Canny | Canny(15,50), Normalization(4.0) |
+| **D10** | ขวดแก้ว | Canny + Morph Close + Thresholding | Thresholding & Morphology |
 | **FE1** | ทหารลายพราง | HSV + Canny | ล้มเหลว (Pattern matching bg) |
-| **FE2** | นกฮูกพรางตัว | HSV + Canny + Gabor Texture | ล้มเหลว (Texture mimicry) |
+| **FE2** | นกฮูกพรางตัว | HSV + Canny + Custom Filter Texture | ล้มเหลว (Texture mimicry) |
 | **FE3** | ปลาในปะการัง | RGB / HSV Colorphase Masking | ล้มเหลว (Complex background) |
-| **FE4** | แมลงกิ่งไม้ | HSV + Gabor Filter Bank | ล้มเหลว (Shape/Texture) |
+| **FE4** | แมลงกิ่งไม้ | HSV + Custom Filter Bank | ล้มเหลว (Shape/Texture) |
 | **FE5** | ร่มสีแดง | HSV Red Band Masking | ล้มเหลว (Color mimicry) |
 | **FE6** | ชุดสีผิว | HSV Skin-Tone Range | ล้มเหลว (Color matching skin) |
 | **FE7** | ฉากกลางคืน | Low-Intensity Thresholding | ล้มเหลว (Extreme darkness) |
-| **FE8** | เต่าทะเล | HSV + Gabor Texture Energy | ล้มเหลว (Pattern overlap) |
-| **FE9** | ปลาแบน Flounder | Gabor Texture + HSV | ล้มเหลว (Perfect matching) |
+| **FE8** | เต่าทะเล | HSV + Custom Filter Texture Energy | ล้มเหลว (Pattern overlap) |
+| **FE9** | ปลาแบน Flounder | Custom Filter Texture + HSV | ล้มเหลว (Perfect matching) |
 | **FE10** | ฝูงชนหนาแน่น | Canny Edge Density | ล้มเหลว (Semantic overlap) |
 | **FU1** | ไข่ต้มสุก | HSV + Canny + LAB + Adaptive | ล้มเหลว (White on White) |
-| **FU2** | เหรียญบนไม้ | CLAHE + Canny + Morphology | ล้มเหลว (Wood Grain Noise) |
+| **FU2** | เหรียญบนไม้ | Normalization + Canny + Morphology | ล้มเหลว (Wood Grain Noise) |
 | **FU3** | แก้วกาแฟสีขาว | Canny + Otsu + Adaptive | ล้มเหลว (Specular Highlights) |
-| **FU4** | แมวดำ | Dark HSV + Canny + Gabor + CLAHE | ล้มเหลว (Same Dark Color) |
+| **FU4** | แมวดำ | Dark HSV + Canny + Custom Filter + Normalization | ล้มเหลว (Same Dark Color) |
 | **FU5** | ขนมปังทั้งก้อน | Brown HSV Mask + Canny | ล้มเหลว (Shadow/Grain) |
-| **FU6** | นกฮูกหิมะ | HSV + LAB b-ch + Canny + Gabor | ล้มเหลว (White on White) |
-| **FU7** | ควันโรงงาน | HSV + Gabor + Sobel Gradient | ล้มเหลว (Transparency/Clouds) |
+| **FU6** | นกฮูกหิมะ | HSV + LAB b-ch + Canny + Custom Filter | ล้มเหลว (White on White) |
+| **FU7** | ควันโรงงาน | HSV + Custom Filter + Sobel Gradient | ล้มเหลว (Transparency/Clouds) |
 | **FU8** | เก้าอี้ไม้ | HSV + Canny + LAB + Adaptive | ล้มเหลว (Material/Texture match) |
-| **FU9** | ใต้น้ำ | LAB + Canny + HSV + CLAHE | ล้มเหลว (Scattering/Cast) |
+| **FU9** | ใต้น้ำ | LAB + Canny + HSV + Normalization | ล้มเหลว (Scattering/Cast) |
 | **FU10** | แมวสีส้ม | HSV + Sobel + Canny + LAB | ล้มเหลว (Color/Texture overlap) |
 
 ---
@@ -558,7 +558,7 @@ Pipeline หลักที่ใช้ในการทดลองนี้�
 2. **วิธีอิงขอบ (Canny, Sobel)** ได้ผลเมื่อวัตถุมี *Intensity Discontinuity* ที่ชัดเจนที่ขอบ
 3. **Morphological Operations** เป็น Post-processor ที่สำคัญมาก ช่วยเชื่อมช่องว่างและกำจัด Noise
 4. **Watershed + Distance Transform** แยกวัตถุที่ชนกันหรือทับซ้อนกันและมีสีเดียวกันออกจากกันได้
-5. **CLAHE** ช่วยกู้ภาพที่ Contrast ต่ำหรือมีหมอกได้ โดยการ Normalize ความสว่างแบบ Local
-6. **Gabor Filter** ตรวจจับขอบที่อิง Texture ได้ในกรณีที่ข้อมูลสีไม่เพียงพอ
+5. **Normalization** ช่วยกู้ภาพที่ Contrast ต่ำหรือมีหมอกได้ โดยการ Normalize ความสว่างแบบ Local
+6. **Custom Filter** ตรวจจับขอบที่อิง Texture ได้ในกรณีที่ข้อมูลสีไม่เพียงพอ
 7. **LAB Color Space** แยกสีที่ต่างกันในเชิง Perceptual ได้ดีกว่า HSV/RGB ในบางกรณี
 8. **ข้อจำกัดพื้นฐานของ Traditional Method** คือ ขาด Semantic Understanding — ไม่สามารถ "เข้าใจ" ได้ว่าวัตถุในภาพคืออะไรหรืออยู่ที่ไหนในเชิงความหมาย
