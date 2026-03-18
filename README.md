@@ -58,108 +58,459 @@ Pipeline หลักที่ใช้ในการทดลองนี้�
 ## 🔍 วิเคราะห์เชิงลึก: รายละเอียดเทคนิคของทั้ง 40 กรณี
 
 ### 🟢 กลุ่มที่ 1: ง่ายและสำเร็จ (E1–E10)
-**แนวทางหลัก:** High-Saturation Color Masking — กรณีเหล่านี้ได้เปรียบตรงที่วัตถุมีสีสดโดดเด่น แยกออกจากพื้นหลังได้ง่าย
+**แนวทางหลัก:** กรณีนี้นักศึกษาสามารถใช้วิธีทาง Color, Image Thresholding หรือ Edge detection ร่วมกับ Morphological Operations เพื่อตรวจจับวัตถุได้โดยง่าย
 
-*   **E1 — แอปเปิ้ลแดง:** ใช้ HSV Dual-Band Masking จับทั้งสองขอบของช่วงสีแดงใน Hue ความ Contrast สูงกับพื้นหลังสีขาวทำให้ Contour Detection แม่นยำมาก
-    ![E1](output/E1.png)
-*   **E2 — กล้วย:** อาศัยสีเหลืองสดสว่างของกล้วย ใช้ Morphological Closing เพื่อเชื่อมช่องว่างเล็กน้อยที่เกิดจาก Specular Highlight บนผิวกล้วย
-    ![E2](output/E2.png)
-*   **E3 — บาสเก็ตบอล:** สีส้มของบาสเก็ตบอลมีความเฉพาะเจาะจงมาก ใช้ Hue Band แคบๆ แยกออกจากพื้นสนามหรือพื้นหลังสีกลางได้ง่าย
-    ![E3](output/E3.png)
-*   **E4 — ลูกเทนนิส:** สีเหลือง-เขียว Fluorescent (Hue 30-80) มีช่วงความยาวคลื่นที่เฉพาะ แทบไม่ปรากฏในพื้นหลังธรรมชาติ ทำให้ได้ Mask ที่สะอาดมาก
-    ![E4](output/E4.png)
-*   **E5 — ถังดับเพลิง:** แยกสีแดงเข้มอุตสาหกรรมออกจากผนังสีอ่อนด้วย HSV Range ที่แข็งแกร่ง เสริมด้วย Area Filtering กรอง Noise ออก
-    ![E5](output/E5.png)
-*   **E6 — เมฆ:** เมฆเป็น Achromatic (ไม่มีสี) จึงใช้ Color Masking ปกติไม่ได้ แก้ด้วยวิธี Otsu's Thresholding บนภาพ Grayscale เพื่อแยกเมฆขาวสว่างออกจากฟ้าสีเข้มกว่า
-    ![E6](output/E6.png)
-*   **E7 — ฟักทอง:** สีส้มสดบนพื้นหลังมืด ใช้ Morphological Opening เพื่อตัดก้านสีเขียนออก เหลือแค่ส่วนผลไม้
-    ![E7](output/E7.png)
-*   **E8 — กุหลาบ:** แยก Hue สีชมพู/Magenta ออกจากใบสีเขียวรอบๆ ได้สำเร็จด้วยการกำหนด Hue Range ให้แม่น
-    ![E8](output/E8.png)
-*   **E9 — แตงโม:** โฟกัสที่การ Segment เนื้อสีแดงข้างใน ใช้ Red Mask เพื่อข้ามผ่านเปลือกสีเขียวและสิ่งรอบข้าง
-    ![E9](output/E9.png)
-*   **E10 — ไฟจราจร:** โฟกัสที่สัญญาณไฟสีเขียว Intensity สูง กรองด้วยค่า Saturation และ Value สูงพร้อมกัน เพื่อ Isolate หลอดไฟที่กำลังติดอยู่ได้แม่นยำ
-    ![E10](output/E10.png)
+#### E1 – Red Apple on White Background
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแแหล่งที่มา](https://share.google/74CVNllQzVKbdnTBs)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** Red Apple on White Background
+- **เทคนิคและพารามิเตอร์ที่ใช้:** HSV Color Thresholding + Morphology + Contour
+- **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
+  > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
+  ![E1](output/E1.png)
 
----
+#### E2 – Yellow Banana on White/Light Background
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแแหล่งที่มา](https://share.google/ISvh2g2j8AdKsbL3J)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** Yellow Banana on White/Light Background
+- **เทคนิคและพารามิเตอร์ที่ใช้:** HSV Color Thresholding + Morphology + Contour
+- **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
+  > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
+  ![E2](output/E2.png)
+
+#### E3 – Orange Basketball on White Background
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแแหล่งที่มา](https://share.google/jlWQTePSda25oOeFM)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** Orange Basketball on White Background
+- **เทคนิคและพารามิเตอร์ที่ใช้:** HSV Color Thresholding + Morphology + Contour
+- **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
+  > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
+  ![E3](output/E3.png)
+
+#### E4 – (Improved): Tennis Ball Segmentation
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแแหล่งที่มา](https://share.google/F2xmjs120eakDCnYS)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** (Improved): Tennis Ball Segmentation
+- **เทคนิคและพารามิเตอร์ที่ใช้:** HSV + Blur + Hole Filling + Largest Component
+- **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
+  > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
+  ![E4](output/E4.png)
+
+#### E5 – Red Fire Extinguisher on Light Background
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแแหล่งที่มา](https://pin.it/7KnUPlNKW)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** Red Fire Extinguisher on Light Background
+- **เทคนิคและพารามิเตอร์ที่ใช้:** HSV Dual-Band Red Threshold + Morphology + Contour
+- **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
+  > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
+  ![E5](output/E5.png)
+
+#### E6 – Blue Sky — Detect Clouds (White Region)
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแแหล่งที่มา](https://pin.it/5pd8jz05R)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** Blue Sky — Detect Clouds (White Region)
+- **เทคนิคและพารามิเตอร์ที่ใช้:** Grayscale + Gaussian Blur + Otsu's Threshold + Morphology
+- **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
+  > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
+  ![E6](output/E6.png)
+
+#### E7 – Orange Pumpkin on Dark Background
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแแหล่งที่มา](https://share.google/1os9xZLPmsSH5waUx)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** Orange Pumpkin on Dark Background
+- **เทคนิคและพารามิเตอร์ที่ใช้:** HSV Color Thresholding + Morphology + Contour
+- **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
+  > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
+  ![E7](output/E7.png)
+
+#### E8 – Pink/Red Rose on Dark Background
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแแหล่งที่มา](https://share.google/yOfLQPJVZJewNaQRr)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** Pink/Red Rose on Dark Background
+- **เทคนิคและพารามิเตอร์ที่ใช้:** HSV Color Thresholding + Morphology + Contour
+- **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
+  > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
+  ![E8](output/E8.png)
+
+#### E9 – Watermelon (Green External, Red Internal) — Segment Red Part
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแแหล่งที่มา](https://share.google/5UtSq3gco7WGckMiq)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** Watermelon (Green External, Red Internal) — Segment Red Part
+- **เทคนิคและพารามิเตอร์ที่ใช้:** HSV Dual-Band Red Threshold + Morphology + Contour
+- **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
+  > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
+  ![E9](output/E9.png)
+
+#### E10 – Green Traffic Light Signal
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแแหล่งที่มา](https://share.google/NEttFWjaG8fqE4jtF)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** Green Traffic Light Signal
+- **เทคนิคและพารามิเตอร์ที่ใช้:** HSV Bright Green Thresholding + Morphology + Contour
+- **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
+  > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
+  ![E10](output/E10.png)
 
 ### 🟡 กลุ่มที่ 2: ยากแต่สำเร็จ (D1–D10)
-**แนวทางหลัก:** Advanced Preprocessing & Multi-stage Algorithms — กรณีเหล่านี้มีความท้าทาย เช่น Contrast ต่ำ วัตถุซ้อนทับกัน หรือ Color Cue ที่จาง
+**แนวทางหลัก:** กรณีเหล่านี้มีความท้าทายจาก Contrast ต่ำ หรือความคล้ายกับพื้นหลัง แต่สามารถแก้ได้ด้วยการใช้ Advanced Filters, Fusion หรือ Iterative Segmentation (GrabCut, Watershed)
 
-*   **D1 — จานสีขาว:** ปัญหา White-on-White ความต่างของ Intensity เล็กน้อยที่ขอบจาน ถูกจับได้ด้วย Canny แล้วส่งต่อให้ GrabCut ดึงจานออกจากผ้าปูโต๊ะสีขาว
-    ![D1](output/D1.png)
-*   **D2 — เห็ด:** เห็ดสีน้ำตาลบนพื้นป่า ใช้ LAB a-channel (แกนแดง-เขียว) แยก Tone อุ่นของเห็ดออกจากดินและใบไม้ที่มีโทนเย็นกว่า
-    ![D2](output/D2.png)
-*   **D3 — มะนาว:** ปัญหาวัตถุชนกัน ใช้ Distance Transform เพื่อหา "ยอด" ของมะนาวแต่ละลูก แล้วใช้เป็น Seed ให้ Watershed Algorithm แบ่งขอบที่ทับกันออก
-    ![D3](output/D3.png)
-*   **D4 — หมีขั้วโลก:** ขนขาวบนหิมะขาว ใช้ CLAHE ขยาย Texture ของขน และ LAB b-channel แยก Tone อุ่นของหมีออกจากหิมะที่มีโทนเย็น-ฟ้า
-    ![D4](output/D4.png)
-*   **D5 — กิ้งก่า:** พระเอกด้านพรางตัว ใช้ Sobel Gradient Magnitude เพื่อตรวจจับ Texture ความถี่สูงของเกล็ด ซึ่งแตกต่างจาก Texture เรียบๆ ของใบไม้
-    ![D5](output/D5.png)
-*   **D6 — แมวในพื้นหลังรก:** ใช้ Bilateral Filtering ลด Noise พื้นหลังโดยยังรักษาขอบของแมวไว้ ทำให้ Canny สามารถหา Silhouette ที่ต่อเนื่องได้
-    ![D6](output/D6.png)
-*   **D7 — ม้าลาย:** ลายทาง Contrast สูง ใช้ Sobel Operator จับ Gradient สนาม Density สูงของลายขาว-ดำ เพื่อระบุตำแหน่งของสัตว์
-    ![D7](output/D7.png)
-*   **D8 — ป้ายจราจร:** ป้ายถูกบดบังด้วยกิ่งไม้บางส่วน หลัง HSV Yellow Masking ใช้ Morphological Closing ขนาดใหญ่ "ซ่อม" รูปทรงป้ายที่หายไปข้างหลังกิ่ง
-    ![D8](output/D8.png)
-*   **D9 — ภูเขาในหมอก:** Contrast ต่ำมากเพราะหมอกหนา ใช้ CLAHE ทำ Dehazing เพื่อปรับ Brightness เฉพาะพื้นที่ ทำให้ขอบฟ้าของภูเขาจับได้ด้วย Canny
-    ![D9](output/D9.png)
-*   **D10 — ขวดแก้ว:** ปัญหา Transparency ใช้ GrabCut ในโหมด Rectangle เพื่อ Iterate จากรูปแบบการหักเหของแสงที่ขอบขวด จนได้ Foreground Mask ที่แน่นหนา
-    ![D10](output/D10.png)
+#### D1 – White Plate on a High-Brightness Tablecloth
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแแหล่งที่มา](https://share.google/ZepDCx9BEFsNNx0wv)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** White Plate on a High-Brightness Tablecloth
+- **เทคนิคและพารามิเตอร์ที่ใช้:** Bilateral Filter, Canny Edge Detection, Hough Circle Transform, GrabCut Refinement
+- **ความยากที่พบ (Difficulty):** Low Contrast, Hard Color Discrimination, Bright Background Blends with Object
+- **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
+  > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
+  ![D1](output/D1.png)
 
----
+#### D2 – Brown Mushroom on Forest Floor
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแแหล่งที่มา](https://share.google/9n7sXo5h3a8qj1v0C)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** Brown Mushroom on Forest Floor
+- **เทคนิคและพารามิเตอร์ที่ใช้:** LAB Color Thresholding + Morphology + Contour Scoring
+- **ความยากที่พบ (Difficulty):** Low Contrast, Complex Background, Multiple Similar-Colored Objects
+- **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
+  > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
+  ![D2](output/D2.png)
+
+#### D3 – Lemon Segmentation (Traditional Approach)
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแแหล่งที่มา](https://share.google/d5VEueqApN872IKVPg)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** Lemon Segmentation (Traditional Approach)
+- **เทคนิคและพารามิเตอร์ที่ใช้:** HSV Color Masking, Distance Transform, Watershed Segmentation
+- **ความยากที่พบ (Difficulty):** Overlapping Objects, Specular Highlights, Similar Colors Between Instances
+- **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
+  > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
+  ![D3](output/D3.png)
+
+#### D4 – Polar Bear in Snow
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแแหล่งที่มา](https://share.google/rzxLTsiFlIdtgwTL8)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** Polar Bear in Snow
+- **เทคนิคและพารามิเตอร์ที่ใช้:** Gaussian Blur + Otsu, Low-threshold Canny, LAB b-channel + Morphological Refinement
+- **ความยากที่พบ (Difficulty):** Near-zero color/intensity difference between white fur and white snow
+- **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
+  > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
+  ![D4](output/D4.png)
+
+#### D5 – Camouflaged Chameleon on Leafy Background
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแแหล่งที่มา](https://share.google/B2vSogKAA37Rc7quN)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** Camouflaged Chameleon on Leafy Background
+- **เทคนิคและพารามิเตอร์ที่ใช้:** Branch-Color Exclusion + LAB Sobel Gradient + Saturation-Weighted Canny
+- **ความยากที่พบ (Difficulty):** Highly Camouflaged Pattern Closely Matching the Leafy Background,
+- **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
+  > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
+  ![D5](output/D5.png)
+
+#### D6 – Cat on Complex Background
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแแหล่งที่มา](https://share.google/qivBOHSNhPhA88eA6)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** Cat on Complex Background
+- **เทคนิคและพารามิเตอร์ที่ใช้:** Gaussian Blur + Canny Edge Detection + Contour Fill + Morphological Closing
+- **ความยากที่พบ (Difficulty):** Fur Texture Blends with Background, Color Thresholding Unreliable
+- **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
+  > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
+  ![D6](output/D6.png)
+
+#### D7 – Zebra on Natural Background
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแแหล่งที่มา](https://pin.it/4XFJiQZDw)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** Zebra on Natural Background
+- **เทคนิคและพารามิเตอร์ที่ใช้:** Sobel Gradient Magnitude + Morphology + Geometric Candidate Scoring
+- **ความยากที่พบ (Difficulty):** Black-and-White Stripes Blend with Sky and Grass Textures,
+- **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
+  > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
+  ![D7](output/D7.png)
+
+#### D8 – Street Sign (Partially Occluded by Tree Branch)
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแแหล่งที่มา](https://share.google/BUaYqUT3vca4MYiaP)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** Street Sign (Partially Occluded by Tree Branch)
+- **เทคนิคและพารามิเตอร์ที่ใช้:** HSV red segmentation + morphological reconstruction
+- **ความยากที่พบ (Difficulty):** object partially occluded; irregular occlusion pattern
+- **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
+  > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
+  ![D8](output/D8.png)
+
+#### D9 – Foggy Landscape — Detect Mountain/Horizon
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแแหล่งที่มา](https://pin.it/5Zv5rxRCh)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** Foggy Landscape — Detect Mountain/Horizon
+- **เทคนิคและพารามิเตอร์ที่ใช้:** CLAHE + Canny with low thresholds + Probabilistic Hough
+- **ความยากที่พบ (Difficulty):** low contrast due to fog, unclear boundaries
+- **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
+  > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
+  ![D9](output/D9.png)
+
+#### D10 – Transparent Glass Bottle
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแแหล่งที่มา](https://share.google/iNFBvuNFjRGHVs5OR)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** Transparent Glass Bottle
+- **เทคนิคและพารามิเตอร์ที่ใช้:** Canny + GrabCut (graph-cut, NOT ML — no model training)
+- **ความยากที่พบ (Difficulty):** transparent object reflects surroundings; no clear color
+- **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
+  > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
+  ![D10](output/D10.png)
 
 ### 🔴 กลุ่มที่ 3: ล้มเหลวตามคาด (FE1–FE10)
-**แนวทางหลัก:** Evolutionary Camouflage (ไม่มี Signal เลย) — วัตถุเหล่านี้วิวัฒนาการมาเพื่อให้มีสี ขอบ และ Texture เหมือนกับสิ่งแวดล้อมอย่างสมบูรณ์แบบ
+**แนวทางหลัก:** กรณีที่วัตถุถูกออกแบบหรือวิวัฒนาการมาเพื่อพรางตัว (Evolutionary Camouflage) ทำให้วิธีระดับ Pixel ไม่มีทางทำได้สำเร็จ
 
-*   **FE1 — ทหารลายพราง:** ลวดลายออกแบบมาเพื่อทำลาย Silhouette และจับคู่กับความถี่ของสีและ Texture ในป่า ไม่มี Signal เหลือสำหรับ Traditional CV เลย
-    ![FE1](output/FE1.png)
-*   **FE2 — นกฮูกพรางตัว:** ขนของนกฮูกเลียนแบบลาย Texture ของเปลือกไม้ได้สมบูรณ์แบบมาก แม้แต่ Gabor Texture Analysis ก็มองเห็นภาพทั้งภาพเป็น Texture เดียวกัน
-    ![FE2](output/FE2.png)
-*   **FE3 — ปลาในปะการัง:** สีสันของปลาแม้จะสวยงามแต่กระจัดกระจาย ตรงกับปะการังรอบๆ Algorithm แตกปลาออกเป็น Blob สีเล็กๆ มากมาย แทนที่จะเป็นวัตถุชิ้นเดียว
-    ![FE3](output/FE3.png)
-*   **FE4 — แมลงกิ่งไม้:** ทั้งสีและ "รูปทรงเรขาคณิต" เลียนแบบกิ่งไม้ ไม่มีความแตกต่างที่แยกแยะได้ระหว่างขาของแมลงกับกิ่งไม้รอบๆ
-    ![FE4](output/FE4.png)
-*   **FE5 — ร่มสีแดงในกองมะเขือเทศ:** Hue, Saturation และ Value เหมือนกันหมด Algorithm รวมร่มเข้ากับมะเขือเทศโดยแยกไม่ออก
-    ![FE5](output/FE5.png)
-*   **FE6 — ชุดสีผิว:** สีของชุดตรงกับโทนผิวของผู้สวมใส่พอดี ทุก Color Space ไม่มีขอบที่ตรวจจับได้ระหว่างคนและเสื้อผ้าเลย
-    ![FE6](output/FE6.png)
-*   **FE7 — ฉากกลางคืน:** Underexposure รุนแรงมาก ข้อมูลภาพอยู่ที่ "Noise Floor" (ความเข้มใกล้ศูนย์) ไม่มีวิธีการ Enhancement ใดกู้รูปทรงวัตถุกลับมาได้
-    ![FE7](output/FE7.png)
-*   **FE8 — เต่าทะเล:** ลวดลายบนกระดองเต่าเลียนแบบ Texture ของปะการัง Canny ตรวจจับลาย Chaotic ของปะการังและกระดองเป็น Edge Field ต่อเนื่องกัน
-    ![FE8](output/FE8.png)
-*   **FE9 — ปลาแบน Flounder:** ปลาแบนที่ฝังตัวอยู่ในทราย เลียนแบบสีและ Granularity ของทรายได้สมบูรณ์แบบ จนกลายเป็นส่วนหนึ่งของพื้นหลัง
-    ![FE9](output/FE9.png)
-*   **FE10 — ฝูงชนหนาแน่น:** มนุษย์ที่ทับซ้อนกันในกลุ่มแน่น หากไม่มี Semantic Understanding ว่า "ร่างกายมนุษย์" คืออะไร Traditional CV จะมองเห็นเป็นก้อน Texture ขนาดใหญ่ก้อนเดียว
-    ![FE10](output/FE10.png)
+#### FE1 – Military Camouflage Soldier
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแแหล่งที่มา](https://share.google/2cmeFjak8cuMdqPm2)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** Military Camouflage Soldier
+- **การทดลองที่ได้ลองทำมาแล้ว:**
+  - Attempt 1: HSV green-brown range (common camouflage colors)
+  - Attempt 2: Canny edges
+  - Attempt 3: Otsu thresholding
+- **สาเหตุที่ไม่สำเร็จ:**  (ตามที่คาดไว้) camouflage is specifically designed to defeat color/texture detection
+- **ความคิดเห็น (เทคนิคความสามารถพิเศษที่จำเป็น):** จำเป็นต้องใช้ความสามารถด้าน Semantic Understanding เช่น Model Deep Learning (CNN, Transformers) ที่ได้มีการฝึกสอน (Train) จากชุดข้อมูล เพื่อให้สามารถเข้าใจบริบทของภาพโดยรวมได้ (Context)
+- **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
+  > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
+  ![FE1](output/FE1.png)
 
----
+#### FE2 – Camouflaged Owl on Tree Bark
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแแหล่งที่มา](https://share.google/fWHlxeQOQuFpYvyUI)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** Camouflaged Owl on Tree Bark
+- **การทดลองที่ได้ลองทำมาแล้ว:**
+  - Attempt 1: HSV brown-gray range (bark and owl feather tones)
+  - Attempt 2: Canny edges
+  - Attempt 3: Otsu thresholding
+  - Attempt 4: Multi-Scale Gabor (bark vs feather texture)
+- **สาเหตุที่ไม่สำเร็จ:**  (ตามที่คาดไว้) owl feather patterns evolved to mimic bark texture and color
+- **ความคิดเห็น (เทคนิคความสามารถพิเศษที่จำเป็น):** จำเป็นต้องใช้ความสามารถด้าน Semantic Understanding เช่น Model Deep Learning (CNN, Transformers) ที่ได้มีการฝึกสอน (Train) จากชุดข้อมูล เพื่อให้สามารถเข้าใจบริบทของภาพโดยรวมได้ (Context)
+- **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
+  > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
+  ![FE2](output/FE2.png)
+
+#### FE3 – Reef Fish School in Coral Aquarium
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแแหล่งที่มา](https://share.google/RF1RnDgvHY22gkzJG)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** Reef Fish School in Coral Aquarium
+- **การทดลองที่ได้ลองทำมาแล้ว:**
+  - Attempt 1: HSV yellow-orange range (targets the dominant yellow/orange fish)
+  - Attempt 2: Canny edges
+  - Attempt 3: Otsu thresholding
+  - Attempt 4: Multi-color HSV union mask
+- **สาเหตุที่ไม่สำเร็จ:**  (ตามที่คาดไว้) dozens of fish species with colors identical to corals,
+- **ความคิดเห็น (เทคนิคความสามารถพิเศษที่จำเป็น):** จำเป็นต้องใช้ความสามารถด้าน Semantic Understanding เช่น Model Deep Learning (CNN, Transformers) ที่ได้มีการฝึกสอน (Train) จากชุดข้อมูล เพื่อให้สามารถเข้าใจบริบทของภาพโดยรวมได้ (Context)
+- **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
+  > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
+  ![FE3](output/FE3.png)
+
+#### FE4 – Stick Insect on Tree Bark
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแแหล่งที่มา](https://share.google/hPa7sxKQzODfSvhnw)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** Stick Insect on Tree Bark
+- **การทดลองที่ได้ลองทำมาแล้ว:**
+  - Attempt 1: HSV brown range
+  - Attempt 2: Gabor filter
+- **สาเหตุที่ไม่สำเร็จ:**  (ตามที่คาดไว้) insect matches bark texture perfectly by evolution
+- **ความคิดเห็น (เทคนิคความสามารถพิเศษที่จำเป็น):** จำเป็นต้องใช้ความสามารถด้าน Semantic Understanding เช่น Model Deep Learning (CNN, Transformers) ที่ได้มีการฝึกสอน (Train) จากชุดข้อมูล เพื่อให้สามารถเข้าใจบริบทของภาพโดยรวมได้ (Context)
+- **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
+  > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
+  ![FE4](output/FE4.png)
+
+#### FE5 – Red Umbrella Camouflaged Among Tomatoes
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแแหล่งที่มา](https://share.google/AMAnD6s2Rt7kPsmQl)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** Red Umbrella Camouflaged Among Tomatoes
+- **การทดลองที่ได้ลองทำมาแล้ว:**
+  - Attempt 1: HSV red-orange mask
+  - Attempt 2: Shape analysis — find elongated contours (folded umbrella = tall cylinder)
+  - Attempt 3: Texture variance — smooth surface (umbrella) vs bumpy surface (tomato)
+- **สาเหตุที่ไม่สำเร็จ:**  (ตามที่คาดไว้) the umbrella was intentionally designed in tomato-red color,
+- **ความคิดเห็น (เทคนิคความสามารถพิเศษที่จำเป็น):** จำเป็นต้องใช้ความสามารถด้าน Semantic Understanding เช่น Model Deep Learning (CNN, Transformers) ที่ได้มีการฝึกสอน (Train) จากชุดข้อมูล เพื่อให้สามารถเข้าใจบริบทของภาพโดยรวมได้ (Context)
+- **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
+  > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
+  ![FE5](output/FE5.png)
+
+#### FE6 – Nude Dress Blending with Skin Tone
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแแหล่งที่มา](https://share.google/Owag6kXFSi8xBo9fD)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** Nude Dress Blending with Skin Tone
+- **การทดลองที่ได้ลองทำมาแล้ว:**
+  - Attempt 1: HSV skin-tone mask
+  - Attempt 2: YCrCb skin detection (standard skin segmentation method)
+  - Attempt 3: Canny edge segmentation
+  - Attempts to find the fabric-to-skin boundary via gradient —
+  - Attempt 4: Texture variance — fabric (embellishments + wrinkles) vs smooth skin
+- **สาเหตุที่ไม่สำเร็จ:**  (ตามที่คาดไว้) the pale pink / nude dress shares the same hue, saturation,
+- **ความคิดเห็น (เทคนิคความสามารถพิเศษที่จำเป็น):** จำเป็นต้องใช้ความสามารถด้าน Semantic Understanding เช่น Model Deep Learning (CNN, Transformers) ที่ได้มีการฝึกสอน (Train) จากชุดข้อมูล เพื่อให้สามารถเข้าใจบริบทของภาพโดยรวมได้ (Context)
+- **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
+  > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
+  ![FE6](output/FE6.png)
+
+#### FE7 – Night Scene — Detect Car Body
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแแหล่งที่มา](https://share.google/AGMcw5aU4iuqoEnfZ)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** Night Scene — Detect Car Body
+- **การทดลองที่ได้ลองทำมาแล้ว:**
+  - Attempt 1: CLAHE + Canny
+  - Attempt 2: Bright-pixel threshold (headlights / taillights only)
+  - Attempt 3: Otsu thresholding on CLAHE-enhanced image
+  - Attempts a global brightness split after contrast enhancement —
+- **สาเหตุที่ไม่สำเร็จ:**  (ตามที่คาดไว้) extreme darkness eliminates all color information;
+- **ความคิดเห็น (เทคนิคความสามารถพิเศษที่จำเป็น):** เทคนิคที่อาจจะช่วยได้คือการใช้เซ็นเซอร์ภาพอื่น เช่น Infrared หรือ Thermal Camera เนื่องจากแสงในช่วงสายตาปกติมีไม่เพียงพอในการสร้าง Intensity ให้ตรวจจับ
+- **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
+  > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
+  ![FE7](output/FE7.png)
+
+#### FE8 – Sea Turtle on Coral Reef
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแแหล่งที่มา](https://pin.it/57y6wVlCt)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** Sea Turtle on Coral Reef
+- **การทดลองที่ได้ลองทำมาแล้ว:**
+  - Attempt 1: HSV coral-brown mask (target the turtle's shell tone)
+  - Attempt 2: Canny edge detection + morphological closing
+  - Attempt 3: Multi-angle Gabor filter (detect scute pattern on shell)
+  - Attempt 4: GrabCut with center ROI (assume turtle occupies the image centre)
+- **สาเหตุที่ไม่สำเร็จ:**  (ตามที่คาดไว้) the turtle's shell pattern and warm-brown tone overlap completely
+- **ความคิดเห็น (เทคนิคความสามารถพิเศษที่จำเป็น):** จำเป็นต้องใช้ความสามารถด้าน Semantic Understanding เช่น Model Deep Learning (CNN, Transformers) ที่ได้มีการฝึกสอน (Train) จากชุดข้อมูล เพื่อให้สามารถเข้าใจบริบทของภาพโดยรวมได้ (Context)
+- **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
+  > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
+  ![FE8](output/FE8.png)
+
+#### FE9 – Flounder Fish on Sandy Bottom
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแแหล่งที่มา](https://pin.it/BystUjijX)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** Flounder Fish on Sandy Bottom
+- **การทดลองที่ได้ลองทำมาแล้ว:**
+  - Attempt 1: HSV sandy/tan color mask
+  - Attempt 2: Gabor at various scales
+- **สาเหตุที่ไม่สำเร็จ:**  (ตามที่คาดไว้) flatfish evolved perfect color/texture mimicry of sand
+- **ความคิดเห็น (เทคนิคความสามารถพิเศษที่จำเป็น):** จำเป็นต้องใช้ความสามารถด้าน Semantic Understanding เช่น Model Deep Learning (CNN, Transformers) ที่ได้มีการฝึกสอน (Train) จากชุดข้อมูล เพื่อให้สามารถเข้าใจบริบทของภาพโดยรวมได้ (Context)
+- **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
+  > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
+  ![FE9](output/FE9.png)
+
+#### FE10 – Dense Crowd of People
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแแหล่งที่มา](https://share.google/Z33aTWqH3gDI1ypEf)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** Dense Crowd of People
+- **การทดลองที่ได้ลองทำมาแล้ว:**
+  - Attempt 1: Adaptive threshold
+  - Attempt 2: Canny
+- **สาเหตุที่ไม่สำเร็จ:**  (ตามที่คาดไว้) no way to separate individual people without semantic knowledge
+- **ความคิดเห็น (เทคนิคความสามารถพิเศษที่จำเป็น):** ต้องใช้วิธี Instance Segmentation ผ่าน Deep Learning ที่มีการทำ Object Counting หรือ Heatmap เพื่อก้าวข้ามข้อจำกัดของการตรวจจับ Edge ที่ซ้อนทับกันหนาแน่น
+- **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
+  > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
+  ![FE10](output/FE10.png)
 
 ### 🟠 กลุ่มที่ 4: ล้มเหลวโดยไม่คาดคิด (FU1–FU10)
-**แนวทางหลัก:** Environmental Noise & Global Threshold Failure — กรณีเหล่านี้ตามหลักการควรทำได้ แต่กลับพ่ายแพ้ให้กับ Artifacts ของแสงหรือวัสดุโดยเฉพาะ
+**แนวทางหลัก:** กรณีที่คาดว่าควรจะสำเร็จแต่ล้มเหลว เนื่องจากข้อจำกัดที่ไม่คาดคิดจากสภาพแวดล้อม แสง และข้อบกพร่องของ Traditional Image Processing
 
-*   **FU1 — ไข่ต้มสุก:** ไข่ขาวบนจานขาว แสงสว่างคุณภาพสูงทำให้ไม่มี Shadow ที่ขอบ Pixel ขอบมี Intensity เหมือนกันหมด ไม่มี Intensity Gradient เหลือเลย
-    ![FU1](output/FU1.png)
-*   **FU2 — เหรียญบนไม้:** Reflection บนผิวโลหะ เหรียญสะท้อน Grain ของไม้โต๊ะ ทำให้มันดู "โปร่งใส" ต่อ Algorithm
-    ![FU2](output/FU2.png)
-*   **FU3 — แก้วกาแฟสีขาว:** Specular Highlights จากแสงไฟที่สะท้อนบนผิวเซรามิก สว่างกว่าตัวแก้วเองด้วยซ้ำ ทำให้เกิด "รู" ใน Mask ตรงจุดที่แสงกระทบ
-    ![FU3](output/FU3.png)
-*   **FU4 — แมวดำบนโซฟาดำ:** ทั้งคู่อยู่ในช่วง Intensity ต่ำสุด 5% (Value 0-20) Contrast Enhancement ล้มเหลวเพราะข้อมูลทั้งหมดอัดแน่นอยู่ในช่วงแคบมาก
-    ![FU4](output/FU4.png)
-*   **FU5 — ขนมปังทั้งก้อน:** ขนมปังสีน้ำตาลบนกระดานสีน้ำตาล เงาที่ขนมปังทอดทิ้งมีขอบคมกว่าขนมปังเอง ทำให้ Canny วิ่งตามเงาแทนที่จะวิ่งตามก้อนขนมปัง
-    ![FU5](output/FU5.png)
-*   **FU6 — นกฮูกหิมะ:** คล้ายหมีขั้วโลก แต่ขนอ่อนนุ่มกว่า (Downy Feather) ทำให้ Canny หาวง Closed Loop ของ Silhouette ร่างกายไม่ได้
-    ![FU6](output/FU6.png)
-*   **FU7 — ควันโรงงาน:** Transparency และ Diffusion ควันไม่มี "ขอบ" ที่ชัดเจน ขอบมันคือ Gradient ของความโปร่งใสที่ค่อยๆ กลืนหายไปกับพื้นหลังเมฆ
-    ![FU7](output/FU7.png)
-*   **FU8 — เก้าอี้ไม้:** Material Match ไม้ของเก้าอี้และพื้นมี Grain Direction และสีเหมือนกัน ทำให้ Morphological Operations รวมทั้งสองเข้าด้วยกัน
-    ![FU8](output/FU8.png)
-*   **FU9 — ใต้น้ำ:** Light Scattering (Haze) น้ำทำหน้าที่เป็น Blue-Green Filter และ Diffuser ทำลาย Contrast และทำให้ขอบต่างๆ เบลอจนตรวจจับไม่ได้
-    ![FU9](output/FU9.png)
-*   **FU10 — แมวสีส้ม:** Color และ Texture ทับซ้อนกัน ลายของแมวตรงกับทิศทางการทอผ้าของโซฟา ทำให้ Gabor และ Edge Analysis เห็นเป็น Texture plane เดียวกัน
-    ![FU10](output/FU10.png)
+#### FU1 – Peeled Hard-Boiled Egg on White Plate
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแแหล่งที่มา](https://share.google/8O2a5qIGxSqxw7mED)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** Peeled Hard-Boiled Egg on White Plate
+- **การทดลองที่ได้ลองทำมาแล้ว:**
+  - Attempt 1: Brightness threshold (egg white = very high brightness)
+  - Attempt 2: Canny low threshold (chase the faint contact shadow at egg edge)
+  - Attempt 3: LAB b-channel (egg has a faint warm yellow tint vs cool plate white)
+  - Attempt 4: Adaptive threshold (exploit local contrast between egg and plate)
+- **สาเหตุที่ไม่สำเร็จ:** egg has a clear oval shape + subtle contact shadow → contour should find it easily => กลายเป็นว่า: egg white and white plate share identical brightness, hue, and saturation;
+- **ความคิดเห็น (เทคนิคความสามารถพิเศษที่จำเป็น):** จำเป็นต้องใช้ความสามารถด้าน Semantic Understanding เช่น Model Deep Learning (CNN, Transformers) ที่ได้มีการฝึกสอน (Train) จากชุดข้อมูล เพื่อให้สามารถเข้าใจบริบทของภาพโดยรวมได้ (Context)
+- **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
+  > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
+  ![FU1](output/FU1.png)
 
----
+#### FU2 – Coin on Wooden Table
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแแหล่งที่มา](https://share.google/BKo5lqWmNLlk5mAbF)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** Coin on Wooden Table
+- **การทดลองที่ได้ลองทำมาแล้ว:**
+  - Attempt 1: CLAHE + GaussianBlur (enhance local contrast before edge detection)
+  - Attempt 2: Canny Edge Detection (low=30, high=100)
+  - Attempt 3: Morphological Closing to reconnect broken edges
+  - Attempt 4: Contour + Bounding Box
+- **สาเหตุที่ไม่สำเร็จ:** coin has a distinct circular shape + metallic sheen → Canny/contour should detect it => กลายเป็นว่า: coin's metallic reflection matches wood tone; grain edges override coin boundary
+- **ความคิดเห็น (เทคนิคความสามารถพิเศษที่จำเป็น):** จำเป็นต้องใช้ความสามารถด้าน Semantic Understanding เช่น Model Deep Learning (CNN, Transformers) ที่ได้มีการฝึกสอน (Train) จากชุดข้อมูล เพื่อให้สามารถเข้าใจบริบทของภาพโดยรวมได้ (Context)
+- **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
+  > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
+  ![FU2](output/FU2.png)
+
+#### FU3 – White Coffee Mug on White Table
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแแหล่งที่มา](https://share.google/LiKJfGXf1xejAhGE2)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** White Coffee Mug on White Table
+- **การทดลองที่ได้ลองทำมาแล้ว:**
+  - Attempt 1: Canny (expected to detect cup boundary and rim)
+  - Attempt 2: Otsu Thresholding (automatic foreground/background separation)
+  - Attempt 3: Adaptive Threshold (capture local contrast between cup and table)
+- **สาเหตุที่ไม่สำเร็จ:** simple Canny should find the cup boundary. => กลายเป็นว่า: strong specular highlight + white surface = boundary disappears.
+- **ความคิดเห็น (เทคนิคความสามารถพิเศษที่จำเป็น):** จำเป็นต้องใช้ความสามารถด้าน Semantic Understanding เช่น Model Deep Learning (CNN, Transformers) ที่ได้มีการฝึกสอน (Train) จากชุดข้อมูล เพื่อให้สามารถเข้าใจบริบทของภาพโดยรวมได้ (Context)
+- **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
+  > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
+  ![FU3](output/FU3.png)
+
+#### FU4 – Black Cat on Black Sofa
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแแหล่งที่มา](https://pin.it/7Kg6lwfTk)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** Black Cat on Black Sofa
+- **การทดลองที่ได้ลองทำมาแล้ว:**
+  - Attempt 1: Dark region threshold (cat = very dark pixels)
+  - Attempt 2: Canny edge (find cat body boundary)
+  - Attempt 3: Gabor texture filter (cat fur vs. sofa fabric frequency)
+  - Attempt 4: CLAHE + Otsu on LAB L-channel (local contrast enhancement)
+- **สาเหตุที่ไม่สำเร็จ:** Cat has distinct body shape + fur texture → contour/texture will work => กลายเป็นว่า: Cat and sofa are same dark color; texture difference too subtle
+- **ความคิดเห็น (เทคนิคความสามารถพิเศษที่จำเป็น):** จำเป็นต้องใช้ความสามารถด้าน Semantic Understanding เช่น Model Deep Learning (CNN, Transformers) ที่ได้มีการฝึกสอน (Train) จากชุดข้อมูล เพื่อให้สามารถเข้าใจบริบทของภาพโดยรวมได้ (Context)
+- **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
+  > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
+  ![FU4](output/FU4.png)
+
+#### FU5 – Brown Bread Loaf on Brown Wooden Board
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแแหล่งที่มา](https://share.google/gHKlAsBZ7vuxqUJR9)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** Brown Bread Loaf on Brown Wooden Board
+- **การทดลองที่ได้ลองทำมาแล้ว:**
+  - Attempt 1: Brown HSV range (isolate bread crust color)
+  - Attempt 2: Canny + Morphological Close (find loaf outline)
+  - Attempt 3: Contour bounding box on closed edges
+- **สาเหตุที่ไม่สำเร็จ:** distinct shape (rounded loaf) will be found by contours. => กลายเป็นว่า: grain color of wood matches crust; shadows fragment the contour.
+- **ความคิดเห็น (เทคนิคความสามารถพิเศษที่จำเป็น):** จำเป็นต้องใช้ความสามารถด้าน Semantic Understanding เช่น Model Deep Learning (CNN, Transformers) ที่ได้มีการฝึกสอน (Train) จากชุดข้อมูล เพื่อให้สามารถเข้าใจบริบทของภาพโดยรวมได้ (Context)
+- **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
+  > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
+  ![FU5](output/FU5.png)
+
+#### FU6 – Snowy Owl on Snowy Branch
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแแหล่งที่มา](https://pin.it/69DeTK2bj)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** Snowy Owl on Snowy Branch
+- **การทดลองที่ได้ลองทำมาแล้ว:**
+  - Attempt 1: HSV brightness threshold (owl = bright white)
+  - Attempt 2: LAB b-channel threshold (feathers slightly warm vs cool snow)
+  - Attempt 3: Canny edge (find owl body outline)
+  - Attempt 4: Gabor texture filter (feathers vs smooth snow surface)
+- **สาเหตุที่ไม่สำเร็จ:** Owl has a distinct round body + facial disc → shape cues should work => กลายเป็นว่า: White feathers and white snow are identical in every color space
+- **ความคิดเห็น (เทคนิคความสามารถพิเศษที่จำเป็น):** จำเป็นต้องใช้ความสามารถด้าน Semantic Understanding เช่น Model Deep Learning (CNN, Transformers) ที่ได้มีการฝึกสอน (Train) จากชุดข้อมูล เพื่อให้สามารถเข้าใจบริบทของภาพโดยรวมได้ (Context)
+- **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
+  > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
+  ![FU6](output/FU6.png)
+
+#### FU7 – Factory Smoke Blending with Clouds at Sunset
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแแหล่งที่มา](https://share.google/VJnwMAARFGjwkW7b4)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** Factory Smoke Blending with Clouds at Sunset
+- **การทดลองที่ได้ลองทำมาแล้ว:**
+  - Attempt 1: HSV gray/white mask (smoke = low saturation, mid-high brightness)
+  - Attempt 2: Low-saturation threshold (smoke & clouds share low-sat zone)
+  - Attempt 3: Multi-scale Gabor (turbulent smoke vs. softer cloud texture)
+  - Attempt 4: Sobel gradient magnitude (find plume boundary edges)
+- **สาเหตุที่ไม่สำเร็จ:** Smoke plume rises from chimney → distinct upward shape + low saturation boundary => กลายเป็นว่า: Sunset light tints both smoke and clouds the same orange-gold; boundaries dissolve
+- **ความคิดเห็น (เทคนิคความสามารถพิเศษที่จำเป็น):** จำเป็นต้องใช้ความสามารถด้าน Semantic Understanding เช่น Model Deep Learning (CNN, Transformers) ที่ได้มีการฝึกสอน (Train) จากชุดข้อมูล เพื่อให้สามารถเข้าใจบริบทของภาพโดยรวมได้ (Context)
+- **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
+  > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
+  ![FU7](output/FU7.png)
+
+#### FU8 – Wooden Chair Blending with Wooden Table & Floor
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแแหล่งที่มา](https://share.google/YjglcuzoyJGwoEgNZ)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** Wooden Chair Blending with Wooden Table & Floor
+- **การทดลองที่ได้ลองทำมาแล้ว:**
+  - Attempt 1: HSV warm-brown mask (target chair wood tone)
+  - Attempt 2: Canny edge detection (chair legs and back = strong geometric lines)
+  - Attempt 3: LAB L-channel threshold (separate lit chair from dark shadows)
+  - Attempt 4: Adaptive threshold (recover local contrast under mixed lighting)
+  - Attempts to find chair structure via local brightness differences —
+- **สาเหตุที่ไม่สำเร็จ:** chair has a distinct geometric structure (legs, back, seat) → => กลายเป็นว่า: chair, table, and floor share identical warm-brown wood tones;
+- **ความคิดเห็น (เทคนิคความสามารถพิเศษที่จำเป็น):** จำเป็นต้องใช้ความสามารถด้าน Semantic Understanding เช่น Model Deep Learning (CNN, Transformers) ที่ได้มีการฝึกสอน (Train) จากชุดข้อมูล เพื่อให้สามารถเข้าใจบริบทของภาพโดยรวมได้ (Context)
+- **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
+  > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
+  ![FU8](output/FU8.png)
+
+#### FU9 – Person / Dolphin Underwater (Poor Visibility)
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแแหล่งที่มา](https://share.google/OKHplb2fxDBVBgewQ)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** Person / Dolphin Underwater (Poor Visibility)
+- **การทดลองที่ได้ลองทำมาแล้ว:**
+  - Attempt 1: LAB L-channel dark region (subject = darker than water background)
+  - Attempt 2: Canny (find subject body outline vs. water)
+  - Attempt 3: HSV blue-green suppression (isolate non-water hue regions)
+  - Attempt 4: CLAHE + Adaptive threshold (recover local contrast from haze)
+- **สาเหตุที่ไม่สำเร็จ:** LAB dark-region mask + Canny should outline the subject vs. water => กลายเป็นว่า: Water scattering creates uniform blue-green cast; caustics dominate all edges
+- **ความคิดเห็น (เทคนิคความสามารถพิเศษที่จำเป็น):** จำเป็นต้องใช้ความสามารถด้าน Semantic Understanding เช่น Model Deep Learning (CNN, Transformers) ที่ได้มีการฝึกสอน (Train) จากชุดข้อมูล เพื่อให้สามารถเข้าใจบริบทของภาพโดยรวมได้ (Context)
+- **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
+  > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
+  ![FU9](output/FU9.png)
+
+#### FU10 – Orange Cat on Orange/Yellow Sofa
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแแหล่งที่มา](https://pin.it/2zp0QnsJ7)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** Orange Cat on Orange/Yellow Sofa
+- **การทดลองที่ได้ลองทำมาแล้ว:**
+  - Attempt 1: Orange HSV range (cat body color)
+  - Attempt 2: Sobel gradient magnitude (fur-edge vs. fabric-edge)
+  - Attempt 3: Canny (find body silhouette against background)
+  - Attempt 4: LAB b-channel (cat fur warm yellow-orange vs. fabric texture)
+- **สาเหตุที่ไม่สำเร็จ:** cat fur vs. fabric should have edge cues → boundary detectable => กลายเป็นว่า: cat and sofa share same warm orange hue; Sobel gradients merge fur with fabric weave
+- **ความคิดเห็น (เทคนิคความสามารถพิเศษที่จำเป็น):** จำเป็นต้องใช้ความสามารถด้าน Semantic Understanding เช่น Model Deep Learning (CNN, Transformers) ที่ได้มีการฝึกสอน (Train) จากชุดข้อมูล เพื่อให้สามารถเข้าใจบริบทของภาพโดยรวมได้ (Context)
+- **รูปภาพอินพุต (Input) และ รูปภาพเอาต์พุต (Output):**
+  > **หมายเหตุ:** เอาต์พุตที่แสดงด้านล่างเป็นการรวมภาพ Input ดั้งเดิมไว้ในหน้าต่างเดียวกันทั้งหมดเพื่อเปรียบเทียบผลลัพธ์การทำ Object Segmentation แล้ว
+  ![FU10](output/FU10.png)
+
 
 ## 📊 ตารางสรุป: 40 กรณีทดสอบ
 
