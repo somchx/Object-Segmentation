@@ -1,5 +1,5 @@
-# รายงานการทดลอง: Object Segmentation และ Detection
-## CI 7204 / CI 7306 — การประมวลผลและวิเคราะห์ภาพ | สถาบันบัณฑิตพัฒนบริหารศาสตร์ (NIDA)
+# Challenge 1: Object Segmentation/Detection with Traditional Image Processing
+## CI 7306 Image Analytics 2/2568 
 
 ### 🎓 ข้อมูลผู้จัดทำ
 - **รหัสนักศึกษา:** 6710421004
@@ -8,57 +8,27 @@
 ### 🏛️ สถาบัน
 - **สถาบันบัณฑิตพัฒนบริหารศาสตร์ (NIDA)**
 - **คณะ:** คณะสถิติประยุกต์
-- **สาขา:** วิทยาการคอมพิวเตอร์และระบบสารสนเทศ (CSIS)
+- **สาขา:** วิทยาการคอมพิวเตอร์และระบบสารสนเทศ (CSDT8)
 
 ---
 
-โปรเจกต์นี้เป็นการทดลองใช้ **เทคนิค Image Processing แบบดั้งเดิม** เพื่อทำ Object Segmentation และ Detection  โดยใช้ **OpenCV** และ **Python** ทั้งหมด 40 กรณีทดสอบ แบ่งตามระดับความยากและผลลัพธ์ที่ได้
-
----
-
-## 🛠️ วิธีการและขั้นตอนการทำงาน
-
-Pipeline หลักที่ใช้ในการทดลองนี้เป็น Computer Vision แบบ Traditional ประกอบด้วย 5 ขั้นตอนหลัก ดังนี้
-
-1. **Preprocessing (การเตรียมภาพ):** ลด Noise ด้วย Gaussian/Median Blur และเพิ่ม Contrast ด้วย Normalization
-2. **Feature Extraction (การดึงคุณลักษณะ):**
-    - **Color (สี):** ใช้ HSV สำหรับการทำ Hue-based Masking และ LAB สำหรับการแยกสีที่ดูคล้ายกันแต่ต่างกันในเชิง Perceptual
-    - **Texture (พื้นผิว):** ใช้ Custom Filter เพื่อตรวจจับรูปแบบทิศทาง เช่น ขนสัตว์หรือผ้า
-    - **Edge (ขอบ):** ใช้ Canny และ Sobel เพื่อหารอยต่อของ Intensity
-3. **Refinement (การปรับปรุง Mask):** ใช้ Morphological Operations (Opening, Closing, Dilation) เพื่อเชื่อมช่องว่างและกำจัด Noise blob
-4. **Segmentation (การแบ่งกลุ่ม):** ใช้ Watershed Algorithm สำหรับวัตถุที่ทับกัน และ Thresholding สำหรับการดึง Foreground แบบ Iterative
-5. **Detection (การตรวจจับ):** สร้าง Bounding Box จากการวิเคราะห์ Contour และกรองขนาดด้วย Area Filtering
+โปรเจกต์นี้เป็นการทดลองใช้ **Traditional image processing** เพื่อทำ Object Segmentation และ Detection  โดยใช้ **OpenCV** และ **Python** ทั้งหมด 40 กรณีทดสอบ แบ่งตามระดับความยากและผลลัพธ์ที่ได้
 
 ---
 
 ## 📂 ประเภทของกรณีทดสอบ
-
-### 1. ✅ กรณีที่ง่ายและสำเร็จ (E1–E10)
-กรณีที่วัตถุมีสีสด ตัดกับพื้นหลังอย่างชัดเจน
-- **ผลลัพธ์:** แม่นยำใกล้เคียง 100% ด้วย **HSV Color Masking** แบบง่าย
-- **ตัวอย่าง:** แอปเปิ้ลสีแดง, กล้วย, บาสเก็ตบอล, ลูกเทนนิส
-
-### 2. ✅ กรณีที่ยากแต่สำเร็จ (D1–D10)
-กรณีที่มีความท้าทาย เช่น Contrast ต่ำ วัตถุใกล้เคียงกับพื้นหลัง หรือวัตถุทับซ้อนกัน
-- **ผลลัพธ์:** สำเร็จได้โดยการผสมเทคนิคหลายอย่างเข้าด้วยกัน เช่น **Distance Transform + Watershed** สำหรับมะนาว หรือ **LAB Fusion + Thresholding** สำหรับหมีขั้วโลก
-- **ตัวอย่าง:** หมีขั้วโลกในหิมะ, กิ้งก่าพรางตัว, ขวดแก้วใส
-
-### 3. ❌ กรณีที่ล้มเหลวตามคาด (FE1–FE10)
-กรณีที่วัตถุกลืนหายไปกับสิ่งแวดล้อมอย่างสมบูรณ์แบบ (Evolutionary Camouflage) — ตั้งใจให้ล้มเหลว
-- **ผลลัพธ์:** ล้มเหลวตามเป้าหมาย แสดงให้เห็นว่าการประมวลผลในระดับ Pixel ไม่เพียงพอ หากไม่มี Semantic Knowledge หรือข้อมูล 3D (Depth)
-- **ตัวอย่าง:** ชุดทหารลายพราง, ปลาแบน (Flounder), แมลงกิ่งไม้
-
-### 4. ❌ กรณีที่ล้มเหลวโดยไม่คาดคิด (FU1–FU10)
-กรณีที่ตามหลักการควรแยกได้ แต่กลับล้มเหลวเพราะ Noise จากสภาพแวดล้อม
-- **ผลลัพธ์:** ล้มเหลวเชิงเทคนิค เช่น เกิดจาก **Specular Highlights** (แก้วกาแฟ), **Wood Grain Noise** (เหรียญ), หรือ **Water Scattering** (ใต้น้ำ)
-- **ข้อสังเกต:** แสดงให้เห็นว่า Threshold ที่ต้อง Tune มือนั้นเปราะบางมากต่อความแปรปรวนของแสงในโลกจริง
+1. กรณีที่สำเร็จ (Success Cases) 
+  - Easy Cases (10 ภาพ): วัตถุเป้าหมายตรวจจับได้ง่าย สีตัดกับพื้นหลังชัดเจน สภาพแสงปกติ
+  - Difficult Cases (10 ภาพ): วัตถุเป้าหมายตรวจจับได้ยาก มีความท้าทายสูง เช่น Contrast ต่ำ หรือวัตถุเบียดทับกัน
+2. กรณีที่ล้มเหลว (Failed Cases)
+  - Failed as Expected (10 ภาพ): กรณีที่คาดการณ์ไว้ล่วงหน้าแล้วว่าไม่สามารถตรวจจับได้ เช่น วัตถุพรางตัวกลืนไปกับสิ่งแวดล้อม
+  - Failed but Unexpected (10 ภาพ): กรณีที่คาดว่าควรจะสำเร็จ แต่ล้มเหลวเนื่องจากข้อจำกัดทางเทคนิคหรือปัจจัยภายนอก (Noise)
 
 ---
 
-## 🔍 วิเคราะห์เชิงลึก: รายละเอียดเทคนิคของทั้ง 40 กรณี
+## 🔍 รายละเอียดการตรวจจับวัตถุทั้ง 40 กรณี
 
 ### 🟢 กลุ่มที่ 1: ง่ายและสำเร็จ (E1–E10)
-**แนวทางหลัก:** กรณีนี้นักศึกษาสามารถใช้วิธีทาง Color Thresholding, Grayscale หรือ Edge Detection ร่วมกับ Morphological Operations เพื่อตรวจจับวัตถุได้โดยง่าย
 
 #### E1 – แอปเปิ้ลสีแดงบนพื้นหลังสีขาว
 - **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแหล่งที่มา](https://media.istockphoto.com/id/639812110/photo/fresh-red-apple-isolated-on-white-with-clipping-path.jpg?b=1&s=1024x1024&w=0&k=20&c=qrKDXmJkpHwbwKHwLctbqcQXncRUdkvGeCv_YFKthKI=)
@@ -93,7 +63,7 @@ Pipeline หลักที่ใช้ในการทดลองนี้�
 #### E6 – ท้องฟ้าสีฟ้า — ตรวจจับก้อนเมฆ (พื้นที่สีขาว)
 - **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแหล่งที่มา](https://pin.it/5pd8jz05R)
 - **วัตถุเป้าหมายที่ต้องการตรวจจับ:** ท้องฟ้าสีฟ้า — ตรวจจับก้อนเมฆ (พื้นที่สีขาว)
-- **เทคนิคและพารามิเตอร์ที่ใช้:** Grayscale + Gaussian Blur + Otsu's Threshold + Morphology
+- **เทคนิคและพารามิเตอร์ที่ใช้:** Grayscale + Median Blur + Otsu's Threshold + Morphology
 ![E6](output/E6.png)
 
 #### E7 – ฟักทองสีส้มบนพื้นหลังมืด
@@ -121,12 +91,11 @@ Pipeline หลักที่ใช้ในการทดลองนี้�
 ![E10](output/E10.png)
 
 ### 🟡 กลุ่มที่ 2: ยากแต่สำเร็จ (D1–D10)
-**แนวทางหลัก:** กรณีเหล่านี้มีความท้าทายจาก Contrast ที่ต่ำ หรือความกลมกลืนกับพื้นหลัง แต่สามารถแก้ปัญหาได้ด้วยการใช้ Advanced Filters, Image Fusion หรือ Iterative Segmentation (เช่น Thresholding, Watershed)
 
 #### D1 – จานสีขาวบนผ้าปูโต๊ะที่สว่างมาก
 - **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแหล่งที่มา](https://share.google/ZepDCx9BEFsNNx0wv)
 - **วัตถุเป้าหมายที่ต้องการตรวจจับ:** จานสีขาวบนผ้าปูโต๊ะที่สว่างมาก
-- **เทคนิคและพารามิเตอร์ที่ใช้:** Median Blur, Canny Edge Detection, Hough Circle Transform, Thresholding Refinement
+- **เทคนิคและพารามิเตอร์ที่ใช้:** LAB b-channel Threshold(>130) + Contour Bounding Box Grouping
 - **ความยากที่พบ (Difficulty):** Contrast ต่ำมาก, สีกลมกลืนกับสิ่งแวดล้อม ทำให้แยกความแตกต่างได้ยาก
 ![D1](output/D1.png)
 
@@ -182,19 +151,18 @@ Pipeline หลักที่ใช้ในการทดลองนี้�
 #### D9 – ทิวทัศน์หมอกหนา — ตรวจจับภูเขา/เส้นขอบฟ้า
 - **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแหล่งที่มา](https://pin.it/5Zv5rxRCh)
 - **วัตถุเป้าหมายที่ต้องการตรวจจับ:** ทิวทัศน์หมอกหนา — ตรวจจับภูเขา/เส้นขอบฟ้า
-- **เทคนิคและพารามิเตอร์ที่ใช้:** Normalization + Canny with low thresholds + Probabilistic Hough Transform
+- **เทคนิคและพารามิเตอร์ที่ใช้:** Normalization(clipLimit=4.0) + GaussianBlur(5×5) + Canny(15,50) + Dark Region Masking
 - **ความยากที่พบ (Difficulty):** Contrast ต่ำรุนแรงจากหมอก ทำให้เส้นขอบเขตไม่มีความชัดเจน
 ![D9](output/D9.png)
 
 #### D10 – ขวดแก้วใส
 - **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแหล่งที่มา](https://share.google/iNFBvuNFjRGHVs5OR)
 - **วัตถุเป้าหมายที่ต้องการตรวจจับ:** ขวดแก้วใส
-- **เทคนิคและพารามิเตอร์ที่ใช้:** Canny Edge + Thresholding
+- **เทคนิคและพารามิเตอร์ที่ใช้:** GrabCut Algorithm (graph-cut, NOT ML) + Morphology
 - **ความยากที่พบ (Difficulty):** วัตถุมีความโปร่งใส สะท้อนสิ่งรอบข้าง และไม่มีสีที่ชัดเจนแน่นอน
 ![D10](output/D10.png)
 
 ### 🔴 กลุ่มที่ 3: ล้มเหลวตามคาด (FE1–FE10)
-**แนวทางหลัก:** กรณีที่วัตถุถูกออกแบบหรือวิวัฒนาการมาเพื่อพรางตัว (Evolutionary Camouflage) ทำให้การวิเคราะห์ด้วยเทคนิคระดับ Pixel ไม่มีทางประสบความสำเร็จด้วย Image Processing แบบดั้งเดิม
 
 #### FE1 – ทหารสวมชุดลายพราง
 - **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแหล่งที่มา](https://share.google/2cmeFjak8cuMdqPm2)
@@ -307,7 +275,6 @@ Pipeline หลักที่ใช้ในการทดลองนี้�
 ![FE10](output/FE10.png)
 
 ### 🟠 กลุ่มที่ 4: ล้มเหลวโดยไม่คาดคิด (FU1–FU10)
-**แนวทางหลัก:** กรณีที่คาดว่าควรจะสำเร็จแต่ก็ล้มเหลว เนื่องมาจากข้อจำกัดที่ไม่คาดคิดจากสภาพแวดล้อม แสง และข้อบกพร่องตามธรรมชาติของเทคนิค Image Processing
 
 #### FU1 – ไข่ต้มปอกเปลือกบนจานสีขาว
 - **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแหล่งที่มา](https://media.istockphoto.com/id/639812110/photo/fresh-red-apple-isolated-on-white-with-clipping-path.jpg?b=1&s=1024x1024&w=0&k=20&c=qrKDXmJkpHwbwKHwLctbqcQXncRUdkvGeCv_YFKthKI=)
@@ -433,22 +400,22 @@ Pipeline หลักที่ใช้ในการทดลองนี้�
 | **E2** | กล้วย | HSV Yellow Range + Morphology | Hue[20-35], Sat[105-255] |
 | **E3** | บาสเก็ตบอล | HSV Orange Range + Morphology | Hue[5-25], Sat[180-255] |
 | **E4** | ลูกเทนนิส | HSV Yellow-Green + Morphology | Hue[30-80], Sat[60-255] |
-| **E5** | ถังดับเพลิง | HSV Dual-Band Red + Large Morphology | Hue[0-12, 158-180], Sat[120-255] |
-| **E6** | เมฆ | Grayscale + Gaussian Blur + Otsu | Blur(5x5), Otsu auto |
+| **E5** | ถังดับเพลิง | HSV Dual-Band Red + Large Morphology | Hue[0-10, 170-180], Sat[120-255], Val[80-255] |
+| **E6** | เมฆ | Grayscale + Median Blur + Otsu | MedianBlur(9), Otsu auto, Close(7×7,iter=2) |
 | **E7** | ฟักทอง | HSV Orange + Morphological Open/Close | Hue[6-18], Sat[130-255] |
 | **E8** | กุหลาบ | HSV Pink Range + Morphological Ops | Hue[170-175], Sat[120-200] |
-| **E9** | แตงโม | HSV Dual-Band Red + Large Morph Close | Hue[0-12, 165-180] |
+| **E9** | แตงโม | HSV Dual-Band Red + Large Morph Close | Hue[0-10, 170-180], Sat[120-255], Val[80-255] |
 | **E10** | ไฟจราจร | HSV Bright Green (High Value) | Hue[45-90], Val[180-255] |
-| **D1** | จานสีขาว | Canny Edge Detection + Thresholding Seed | Canny(40,110), Morphological Ops |
-| **D2** | เห็ด | LAB a-channel Threshold + Morphology | A > 145 (pink/brown) |
+| **D1** | จานสีขาว | LAB b-channel Threshold + Contour Bounding Box Grouping | Threshold(>130), Bounding Box Merge |
+| **D2** | เห็ด | LAB inRange + Morphology + Contour Scoring | LAB A[138-172] B[133-172] L[50-190], Close 19×19 ×3 |
 | **D3** | มะนาว | HSV + Distance Transform + Watershed | Dist Threshold(0.65xMax) |
-| **D4** | หมีขั้วโลก | Normalization + LAB Fusion + Thresholding Refinement | Normalization(2.5), Thresholding(5 iter) |
-| **D5** | กิ้งก่า | HSV Threshold + Sobel Gradient | Threshold(18) |
+| **D4** | หมีขั้วโลก | GaussianBlur + Otsu + Canny + LAB b-channel + Morphology | GaussianBlur(5×5), Canny(5,30), LAB b(>130), Close(15×15,×4) |
+| **D5** | กิ้งก่า | Branch Exclusion + LAB Sobel + Saturation Canny + Morphological Fill | Hue[10-35], Canny(30,80), Close 15×15 ×4, Dilated ×4 |
 | **D6** | แมว (ซับซ้อน) | Canny + Contour Fill + Large Morphology | Canny(20,80), Close(15x15) |
 | **D7** | ม้าลาย | Sobel Gradient Magnitude + Threshold | Threshold(52) |
-| **D8** | ป้ายจราจร | HSV Yellow + Morphological Close | Hue[170-180], Sat[90-255] |
+| **D8** | ป้ายจราจร | HSV Dual-Band Red + Morphological Close | Hue[0-10, 170-180], Sat[90-255], Val[70-255] |
 | **D9** | ภูเขาในหมอก | Normalization + Low-Threshold Canny | Canny(15,50), Normalization(4.0) |
-| **D10** | ขวดแก้ว | Canny + Morph Close + Thresholding | Thresholding & Morphology |
+| **D10** | ขวดแก้ว | GrabCut Algorithm (graph-cut) + Morphology | Iterations=12, Open(3×3) + Close(5×5) + Open(3×3) |
 | **FE1** | ทหารลายพราง | HSV + Canny | ล้มเหลว (Pattern matching bg) |
 | **FE2** | นกฮูกพรางตัว | HSV + Canny + Custom Filter Texture | ล้มเหลว (Texture mimicry) |
 | **FE3** | ปลาในปะการัง | RGB / HSV Colorphase Masking | ล้มเหลว (Complex background) |
