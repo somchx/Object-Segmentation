@@ -155,11 +155,11 @@
 - **ความยากที่พบ (Difficulty):** Contrast ต่ำรุนแรงจากหมอก ทำให้เส้นขอบเขตไม่มีความชัดเจน
 ![D9](output/D9.png)
 
-#### D10 – ขวดแก้วใส
-- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแหล่งที่มา](https://share.google/iNFBvuNFjRGHVs5OR)
-- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** ขวดแก้วใส
-- **เทคนิคและพารามิเตอร์ที่ใช้:** GrabCut Algorithm (graph-cut, NOT ML) + Morphology
-- **ความยากที่พบ (Difficulty):** วัตถุมีความโปร่งใส สะท้อนสิ่งรอบข้าง และไม่มีสีที่ชัดเจนแน่นอน
+#### D10 – แมวดำบนโซฟาสีดำ
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแหล่งที่มา](https://pin.it/7Kg6lwfTk)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** แมวดำบนโซฟาสีดำ
+- **เทคนิคและพารามิเตอร์ที่ใช้:** Multi-Orientation Custom Filter (BoxFilter 21×21, 6 orientations) + GaussianBlur(5×5) + Threshold(35) + Morphology Close(11×11,×2) + Open(7×7,×1)
+- **ความยากที่พบ (Difficulty):** แมวและโซฟามีสี ความสว่าง และ Texture เหมือนกันทุก Channel จนแทบแยกไม่ออก ต้องใช้ Multi-Orientation Filter ตรวจจับลักษณะขนแมวที่มีทิศทาง
 ![D10](output/D10.png)
 
 ### 🔴 กลุ่มที่ 3: ล้มเหลวตามคาด (FE1–FE10)
@@ -310,16 +310,16 @@
 - **ความคิดเห็น (เทคนิคความสามารถพิเศษที่จำเป็น):** จำเป็นต้องใช้ความสามารถด้าน Semantic Understanding ข้อมูลขนาดใหญ่จาก Deep Learning (CNN, Transformers) ที่จะเข้าใจว่ารูปทรงบริเวณที่มีเงาสว่างขนาดนี้คือ "แก้ว" อย่างรวดเร็ว
 ![FU3](output/FU3.png)
 
-#### FU4 – แมวดำบนโซฟาสีดำ
-- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแหล่งที่มา](https://pin.it/7Kg6lwfTk)
-- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** แมวดำบนโซฟาสีดำ
+#### FU4 – ขวดแก้วใส
+- **เครดิตที่มาของภาพ (Source):** [คลิกเพื่อดูภาพจากแหล่งที่มา](https://share.google/iNFBvuNFjRGHVs5OR)
+- **วัตถุเป้าหมายที่ต้องการตรวจจับ:** ขวดแก้วใส
 - **การทดลองที่ได้ลองทำมาแล้ว:**
-  - Dark Region Threshold (ดึงข้อมูลสีคล้ำต่ำๆ จากภาพ)
-  - Canny Edge (หาช่องว่างกางกรอบเส้นขนแมว)
-  - Custom Texture Filter (หาความถี่ทรงขนของแมวเทียบกับ Texture เรียบของโซฟา)
-  - ใช้งาน Normalization ร่วมกับ Otsu ในส่วนของภาพ LAB L-Channel (ขยาย Contrast แสงที่ดำสนิทออกมาก)
-- **สาเหตุที่ไม่สำเร็จ:** คาดว่าแมวตัวดำมีหูมีรูปทรงและขนแตกต่าง คอนทัวร์น่าจะทำงานได้อยู่แล้ว => กลายเป็นว่า: แมวและสีโซกาดำสนิทเป็นเบอร์ที่มิดเกินไป เส้นขอบขน Texture ไม่มีความแตกต่างสะท้อนออกมาให้จับเลย
-- **ความคิดเห็น (เทคนิคความสามารถพิเศษที่จำเป็น):** เซ็นเซอร์ภาพประเภทอินฟราเรดความร้อน (Thermal Camera) คือเทคนิคสำคัญในการเปิดเผยความร้อนของตัวสัตว์เลี้ยงออกจากผ้าปูที่นอนสีมืด
+  - Canny Edge Detection (30, 90) + Morphological Close (หวังหาขอบโครงสร้างขวด)
+  - Otsu Thresholding (Inverted) (หวังแยก Background สว่างออกจากขวดมืด)
+  - GrabCut Algorithm (rect seed, 5 iterations) (หวังแยก Foreground ขวดออกด้วย graph-cut)
+  - LAB b-channel Threshold (>128) (หวังจับพื้นที่ที่มีสีอุ่นกว่าของขวด)
+- **สาเหตุที่ไม่สำเร็จ:** คาดว่า GrabCut จะสร้าง fg/bg statistics ได้จาก rect seed ที่กำหนด => กลายเป็นว่า: แก้วโปร่งแสงดูดซับสีพื้นหลัง ไม่มี Consistent Color Region ให้ GrabCut สร้าง fg statistics ได้ Canny และ Otsu ก็ตรวจจับเพียงพื้นหลังแทน
+- **ความคิดเห็น (เทคนิคความสามารถพิเศษที่จำเป็น):** จำเป็นต้องใช้ Polarized Light Photography หรือ Structured Light Scanning ในการตรวจจับพื้นผิวโปร่งแสง หรือใช้โมเดล Deep Learning ที่เข้าใจ Material Property
 ![FU4](output/FU4.png)
 
 #### FU5 – ขนมปังปอนด์สีน้ำตาลบนเขียงไม้สีน้ำตาล
@@ -415,7 +415,7 @@
 | **D7** | ม้าลาย | Sobel Gradient Magnitude + Threshold | Threshold(52) |
 | **D8** | ป้ายจราจร | HSV Dual-Band Red + Morphological Close | Hue[0-10, 170-180], Sat[90-255], Val[70-255] |
 | **D9** | ภูเขาในหมอก | Normalization + Low-Threshold Canny | Canny(15,50), Normalization(4.0) |
-| **D10** | ขวดแก้ว | GrabCut Algorithm (graph-cut) + Morphology | Iterations=12, Open(3×3) + Close(5×5) + Open(3×3) |
+| **D10** | แมวดำบนโซฟา | Multi-Orientation Custom Filter + Morphology | BoxFilter(21×21), 6 orientations, Threshold=35, Close(11×11,×2)+Open(7×7,×1) |
 | **FE1** | ทหารลายพราง | HSV + Canny | ล้มเหลว (Pattern matching bg) |
 | **FE2** | นกฮูกพรางตัว | HSV + Canny + Custom Filter Texture | ล้มเหลว (Texture mimicry) |
 | **FE3** | ปลาในปะการัง | RGB / HSV Colorphase Masking | ล้มเหลว (Complex background) |
@@ -423,13 +423,13 @@
 | **FE5** | ร่มสีแดง | HSV Red Band Masking | ล้มเหลว (Color mimicry) |
 | **FE6** | ชุดสีผิว | HSV Skin-Tone Range | ล้มเหลว (Color matching skin) |
 | **FE7** | ฉากกลางคืน | Low-Intensity Thresholding | ล้มเหลว (Extreme darkness) |
-| **FE8** | เต่าทะเล | HSV + Custom Filter Texture Energy | ล้มเหลว (Pattern overlap) |
+| **FE8** | เต่าทะเล | HSV + Canny + Custom Filter Texture Energy | ล้มเหลว (Pattern overlap) |
 | **FE9** | ปลาแบน Flounder | Custom Filter Texture + HSV | ล้มเหลว (Perfect matching) |
 | **FE10** | ฝูงชนหนาแน่น | Canny Edge Density | ล้มเหลว (Semantic overlap) |
 | **FU1** | ไข่ต้มสุก | HSV + Canny + LAB + Adaptive | ล้มเหลว (White on White) |
 | **FU2** | เหรียญบนไม้ | Normalization + Canny + Morphology | ล้มเหลว (Wood Grain Noise) |
 | **FU3** | แก้วกาแฟสีขาว | Canny + Otsu + Adaptive | ล้มเหลว (Specular Highlights) |
-| **FU4** | แมวดำ | Dark HSV + Canny + Custom Filter + Normalization | ล้มเหลว (Same Dark Color) |
+| **FU4** | ขวดแก้วใส | Canny + Otsu + GrabCut + LAB b-channel | ล้มเหลว (แก้วโปร่งแสงดูดซับสีพื้นหลัง) |
 | **FU5** | ขนมปังทั้งก้อน | Brown HSV Mask + Canny | ล้มเหลว (Shadow/Grain) |
 | **FU6** | นกฮูกหิมะ | HSV + LAB b-ch + Canny + Custom Filter | ล้มเหลว (White on White) |
 | **FU7** | ควันโรงงาน | HSV + Custom Filter + Sobel Gradient | ล้มเหลว (Transparency/Clouds) |
